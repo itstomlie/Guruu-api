@@ -11,18 +11,22 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './user.model';
-
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Create a new user
   @Post()
   async create(@Body() createUserDto: Partial<User>): Promise<User> {
     try {
       const user = await this.usersService.create(createUserDto);
       return user;
     } catch (error) {
+      if (error.name === 'SequelizeUniqueConstraintError') {
+        throw new HttpException(
+          'Username already exists, please try another username',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
       throw new HttpException('Failed to create user', HttpStatus.BAD_REQUEST);
     }
   }

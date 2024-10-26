@@ -42,12 +42,6 @@ export class User extends Model<User> {
   })
   email: string;
 
-  @AllowNull(false)
-  @Column({
-    type: DataType.STRING(255),
-  })
-  passwordHash: string;
-
   @Column({
     type: DataType.STRING(255),
   })
