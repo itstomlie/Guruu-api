@@ -1,7 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
-import { User } from './user.model';
-import * as bcrypt from 'bcrypt';
+import { User } from './user.entity';
 
 @Injectable()
 export class UsersService {

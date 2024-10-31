@@ -5,6 +5,10 @@ import { AuthModule } from './common/auth/auth.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from './modules/users/users.module';
+import { PostsModule } from './modules/posts/posts.module';
+import { QuizzesModule } from './modules/quizzes/quizzes.module';
+import { Post } from './modules/posts/entities/post.entity';
+import { User } from './modules/users/user.entity';
 
 @Module({
   imports: [
@@ -20,10 +24,12 @@ import { UsersModule } from './modules/users/users.module';
         database: 'postgres',
         autoLoadModels: true,
         synchronize: true,
+        // models: [Post, User],
       }),
       inject: [ConfigService],
     }),
     UsersModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

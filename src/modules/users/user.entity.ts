@@ -7,7 +7,9 @@ import {
   PrimaryKey,
   Unique,
   AllowNull,
+  HasMany,
 } from 'sequelize-typescript';
+import { Post } from '../posts/entities/post.entity';
 
 export enum UserRole {
   SUPER_ADMIN = 'super_admin',
@@ -74,4 +76,7 @@ export class User extends Model<User> {
     type: DataType.DATE,
   })
   updatedAt: Date;
+
+  @HasMany(() => Post)
+  posts: Post[];
 }
