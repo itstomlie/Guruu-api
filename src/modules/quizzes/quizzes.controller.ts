@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { QuizzesService } from './quizzes.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
@@ -8,8 +16,13 @@ export class QuizzesController {
   constructor(private readonly quizzesService: QuizzesService) {}
 
   @Post()
-  create(@Body() createQuizDto: CreateQuizDto) {
-    return this.quizzesService.create(createQuizDto);
+  createQuiz(@Body() createQuizDto: CreateQuizDto) {
+    return this.quizzesService.createQuiz(createQuizDto);
+  }
+
+  @Post('/category')
+  createQuestionCategory(@Body() { category }: { category: string }) {
+    return this.quizzesService.createQuestionCategory(category);
   }
 
   @Get()

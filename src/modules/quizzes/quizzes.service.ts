@@ -2,21 +2,68 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { User } from '../users/user.entity';
-import { getModelToken } from '@nestjs/sequelize';
+import { getModelToken, InjectModel } from '@nestjs/sequelize';
 import { Quiz } from './entities/quiz.entity';
+import { QuestionCategory } from './entities/questionCategory.entity';
+import { Question } from './entities/question.entity';
+import { Answer } from './entities/answer.entity';
+import { Option } from './entities/option.entity';
 
 @Injectable()
 export class QuizzesService {
   constructor(
-    @Inject(getModelToken(User))
-    private readonly userModel: typeof User,
-
-    @Inject(getModelToken(Quiz))
-    private readonly quizModel: typeof Quiz,
+    @InjectModel(Quiz) private quizRepo: typeof Quiz,
+    @InjectModel(QuestionCategory)
+    private questionCategoryRepo: typeof QuestionCategory,
+    @InjectModel(Question) private questionRepo: typeof Question,
+    @InjectModel(Answer) private answerRepo: typeof Answer,
+    @InjectModel(Option) private optionRepo: typeof Option,
   ) {}
 
-  create(createQuizDto: CreateQuizDto) {
-    return this.quizModel.create(createQuizDto);
+  async createQuiz(createQuizDto: Partial<CreateQuizDto>) {
+    const quiz = await this.quizRepo.create(createQuizDto);
+
+    createQuizDto.questions.forEach(async (q) => {
+      const category = await this.questionCategoryRepo.findOne({
+        where: {
+          type: q.type,
+        },
+      });
+
+      const question = await this.questionRepo.create({
+        quizId: quiz.id,
+        categoryId: category.id,
+        title: q.title,
+      });
+
+      q.options.forEach(async (o) => {
+        this.optionRepo.create({
+          questionId: question.id,
+          option: o,
+        });
+      });
+
+      this.answerRepo.create({
+        questionId: question.id,
+        answer: q.answer,
+      });
+    });
+
+    //  questions: [
+    //     {
+    //       id: '',
+    //       title: 'whatt?',
+    //       type: 'multiple-choice',
+    //       options: [Array],
+    //       answer: 'best'
+    //     }
+    //   ]
+
+    return 'Create Quiz Success';
+  }
+
+  createQuestionCategory(category: string) {
+    return this.questionCategoryRepo.create({ type: category });
   }
 
   findAll() {

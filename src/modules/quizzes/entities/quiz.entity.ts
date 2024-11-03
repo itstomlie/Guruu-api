@@ -14,7 +14,7 @@ import {
 import { Post } from 'src/modules/posts/entities/post.entity';
 
 @Table({
-  tableName: 'master_quizzes',
+  tableName: 'quizzes',
   timestamps: true,
   underscored: true,
 })

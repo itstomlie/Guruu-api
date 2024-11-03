@@ -20,6 +20,9 @@ export enum PostVisibility {
 }
 
 export enum Status {
+  WAITING_FOR_APPROVAL = 'waiting-for-approval',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
   DRAFT = 'draft',
   POSTED = 'posted',
   BANNED = 'banned',
@@ -38,7 +41,6 @@ export class Post extends Model<Post> {
   })
   id: string;
 
-  @Unique
   @AllowNull(false)
   @ForeignKey(() => User)
   @Column({
@@ -96,6 +98,6 @@ export class Post extends Model<Post> {
   @BelongsTo(() => User)
   user: User;
 
-  // @HasOne(() => Quiz)
-  // quiz: Quiz;
+  @HasOne(() => Quiz)
+  quiz: Quiz;
 }

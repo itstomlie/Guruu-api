@@ -19,8 +19,10 @@ export class UsersController {
   async create(@Body() createUserDto: Partial<User>): Promise<User> {
     try {
       const user = await this.usersService.create(createUserDto);
+      console.log('🚀 ~ UsersController ~ create ~ user:', user);
       return user;
     } catch (error) {
+      console.log('🚀 ~ UsersController ~ create ~ error:', error);
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new HttpException(
           'Username already exists, please try another username',
@@ -31,13 +33,11 @@ export class UsersController {
     }
   }
 
-  // Retrieve all users
   @Get()
   async findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  // Retrieve a single user by ID
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<User> {
     const user = await this.usersService.findOne(id);
@@ -47,7 +47,6 @@ export class UsersController {
     return user;
   }
 
-  // Update a user by ID
   @Put(':id')
   async update(
     @Param('id') id: number,
@@ -60,7 +59,6 @@ export class UsersController {
     return updatedUser;
   }
 
-  // Delete a user by ID
   @Delete(':id')
   async remove(@Param('id') id: number): Promise<void> {
     const user = await this.usersService.findOne(id);

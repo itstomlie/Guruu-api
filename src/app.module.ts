@@ -6,9 +6,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from './modules/users/users.module';
 import { PostsModule } from './modules/posts/posts.module';
-import { QuizzesModule } from './modules/quizzes/quizzes.module';
 import { Post } from './modules/posts/entities/post.entity';
 import { User } from './modules/users/user.entity';
+import { Quiz } from './modules/quizzes/entities/quiz.entity';
+import { QuestionCategory } from './modules/quizzes/entities/questionCategory.entity';
+import { Question } from './modules/quizzes/entities/question.entity';
+import { Option } from './modules/quizzes/entities/option.entity';
+import { Answer } from './modules/quizzes/entities/answer.entity';
 
 @Module({
   imports: [
@@ -22,9 +26,8 @@ import { User } from './modules/users/user.entity';
         username: configService.get<string>('SUPABASE_USERNAME'),
         password: configService.get<string>('SUPABASE_PASSWORD'),
         database: 'postgres',
-        autoLoadModels: true,
+        models: [User, Post, Quiz, QuestionCategory, Question, Option, Answer],
         synchronize: true,
-        // models: [Post, User],
       }),
       inject: [ConfigService],
     }),

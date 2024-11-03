@@ -13,7 +13,7 @@ import {
 import { Question } from './question.entity';
 
 @Table({
-  tableName: 'master_options',
+  tableName: 'options',
   timestamps: true,
   underscored: true,
 })

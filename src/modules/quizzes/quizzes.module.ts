@@ -12,15 +12,15 @@ import { Answer } from './entities/answer.entity';
 @Module({
   imports: [
     SequelizeModule.forFeature([
-      User,
       Quiz,
-      Question,
       QuestionCategory,
+      Question,
       Option,
       Answer,
     ]),
   ],
   controllers: [QuizzesController],
   providers: [QuizzesService],
+  exports: [QuizzesService],
 })
 export class QuizzesModule {}

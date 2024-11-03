@@ -6,27 +6,23 @@ import { User } from './user.entity';
 export class UsersService {
   constructor(
     @Inject(getModelToken(User))
-    private readonly userModel: typeof User,
+    private readonly userRepo: typeof User,
   ) {}
 
-  // Create a new user
   async create(createUserDto: Partial<User>): Promise<User> {
-    return this.userModel.create(createUserDto);
+    return this.userRepo.create(createUserDto);
   }
 
-  // Retrieve all users
   async findAll(): Promise<User[]> {
-    return this.userModel.findAll<User>();
+    return this.userRepo.findAll<User>();
   }
 
-  // Retrieve a single user by ID
   async findOne(id: number): Promise<User> {
-    return this.userModel.findOne<User>({
+    return this.userRepo.findOne<User>({
       where: { id },
     });
   }
 
-  // Update a user by ID
   async update(id: number, updateUserDto: Partial<User>): Promise<User> {
     const user = await this.findOne(id);
     if (!user) {
@@ -35,7 +31,6 @@ export class UsersService {
     return user.update(updateUserDto);
   }
 
-  // Delete a user by ID
   async remove(id: number): Promise<void> {
     const user = await this.findOne(id);
     if (user) {

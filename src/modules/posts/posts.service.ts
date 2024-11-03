@@ -4,12 +4,14 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { getModelToken } from '@nestjs/sequelize';
 import { User } from '../users/user.entity';
 import { Post } from './entities/post.entity';
+import { QuizzesService } from '../quizzes/quizzes.service';
 
 @Injectable()
 export class PostsService {
   constructor(
     @Inject(getModelToken(Post))
-    private readonly postModel: typeof Post,
+    private readonly postRepo: typeof Post,
+    private readonly quizzesService: QuizzesService,
   ) {}
   async create(createPostDto: Partial<CreatePostDto>): Promise<Post> {
     console.log('🚀 ~ PostsService ~ create ~ createPostDto:', createPostDto);
@@ -31,7 +33,14 @@ export class PostsService {
     //     }
     //   ]
     // }
-    return this.postModel.create(createPostDto);
+    const post = await this.postRepo.create(createPostDto);
+    console.log('🚀 ~ PostsService ~ create ~ post:', post);
+    await this.quizzesService.createQuiz({
+      postId: post.id,
+      questions: createPostDto.questions,
+    });
+
+    return post;
   }
 
   findAll() {

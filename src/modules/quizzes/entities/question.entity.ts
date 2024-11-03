@@ -9,12 +9,16 @@ import {
   AllowNull,
   ForeignKey,
   BelongsTo,
+  HasMany,
+  HasOne,
 } from 'sequelize-typescript';
 import { Quiz } from './quiz.entity';
 import { QuestionCategory } from './questionCategory.entity';
+import { Option } from './option.entity';
+import { Answer } from './answer.entity';
 
 @Table({
-  tableName: 'master_questions',
+  tableName: 'questions',
   timestamps: true,
   underscored: true,
 })
@@ -26,7 +30,6 @@ export class Question extends Model<Question> {
   })
   id: string;
 
-  @Unique
   @AllowNull(false)
   @ForeignKey(() => Quiz)
   @Column({
@@ -34,7 +37,6 @@ export class Question extends Model<Question> {
   })
   quizId: string;
 
-  @Unique
   @AllowNull(false)
   @ForeignKey(() => QuestionCategory)
   @Column({
@@ -45,7 +47,7 @@ export class Question extends Model<Question> {
   @Column({
     type: DataType.TEXT,
   })
-  question: string;
+  title: string;
 
   @Default(DataType.NOW)
   @Column({
@@ -63,4 +65,10 @@ export class Question extends Model<Question> {
 
   @BelongsTo(() => QuestionCategory)
   questionCategory: QuestionCategory;
+
+  @HasMany(() => Option)
+  options: Option[];
+
+  @HasOne(() => Answer)
+  answer: Answer;
 }
