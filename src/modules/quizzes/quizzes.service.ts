@@ -36,12 +36,14 @@ export class QuizzesService {
         title: q.title,
       });
 
-      q.options.forEach(async (o) => {
-        this.optionRepo.create({
-          questionId: question.id,
-          option: o,
+      if (q.type !== 'true-false') {
+        q.options.forEach(async (o) => {
+          this.optionRepo.create({
+            questionId: question.id,
+            option: o,
+          });
         });
-      });
+      }
 
       this.answerRepo.create({
         questionId: question.id,
@@ -70,8 +72,31 @@ export class QuizzesService {
     return `This action returns all quizzes`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} quiz`;
+  findOneByPostId(id: string) {
+    return this.quizRepo.findOne({
+      where: {
+        postId: id,
+      },
+      attributes: ['id', 'title', 'description'],
+      include: {
+        model: Question,
+        attributes: ['id', 'title'],
+        include: [
+          {
+            model: QuestionCategory,
+            attributes: ['type'],
+          },
+          {
+            model: Option,
+            attributes: ['option'],
+          },
+          {
+            model: Answer,
+            attributes: ['answer'],
+          },
+        ],
+      },
+    });
   }
 
   update(id: number, updateQuizDto: UpdateQuizDto) {

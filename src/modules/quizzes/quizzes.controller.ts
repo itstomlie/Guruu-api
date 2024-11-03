@@ -30,9 +30,9 @@ export class QuizzesController {
     return this.quizzesService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.quizzesService.findOne(+id);
+  @Get('/post/:id')
+  findOneByPostId(@Param('id') id: string) {
+    return this.quizzesService.findOneByPostId(id);
   }
 
   @Patch(':id')

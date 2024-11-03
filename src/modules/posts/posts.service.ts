@@ -2,9 +2,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { getModelToken } from '@nestjs/sequelize';
-import { User } from '../users/user.entity';
-import { Post } from './entities/post.entity';
+import { Post, PostVisibility, Status } from './entities/post.entity';
 import { QuizzesService } from '../quizzes/quizzes.service';
+import { Quiz } from '../quizzes/entities/quiz.entity';
+import { Question } from '../quizzes/entities/question.entity';
+import { Answer } from '../quizzes/entities/answer.entity';
+import { Option } from '../quizzes/entities/option.entity';
+import { User } from '../users/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -13,28 +17,10 @@ export class PostsService {
     private readonly postRepo: typeof Post,
     private readonly quizzesService: QuizzesService,
   ) {}
+
   async create(createPostDto: Partial<CreatePostDto>): Promise<Post> {
-    console.log('🚀 ~ PostsService ~ create ~ createPostDto:', createPostDto);
-    // {
-    //   title: 'heavy water',
-    //   caption: 'lala',
-    //   hashtags: 'lulu',
-    //   videoUrl: 'https://crilujirdfczplpdeltx.supabase.co/storage/v1/object/public/videos/public/Thu%20Oct%2031%202024%2015:25:57%20GMT+0800-1000000019.mp4',
-    //   thumbnailUrl: 'This is a thumbnail url',
-    //   visibility: 'public',
-    //   status: 'posted',
-    //   questions: [
-    //     {
-    //       id: '',
-    //       title: 'whatt?',
-    //       type: 'multiple-choice',
-    //       options: [Array],
-    //       answer: 'best'
-    //     }
-    //   ]
-    // }
     const post = await this.postRepo.create(createPostDto);
-    console.log('🚀 ~ PostsService ~ create ~ post:', post);
+
     await this.quizzesService.createQuiz({
       postId: post.id,
       questions: createPostDto.questions,
@@ -43,8 +29,33 @@ export class PostsService {
     return post;
   }
 
-  findAll() {
-    return `This action returns all posts`;
+  async findAll({ lean }) {
+    if (lean) {
+      const posts = await this.postRepo.findAll({
+        where: [
+          { status: Status.POSTED },
+          { visibility: PostVisibility.PUBLIC },
+        ],
+        order: [['createdAt', 'DESC']],
+        attributes: [
+          'id',
+          'videoUrl',
+          'thumbnailUrl',
+          'title',
+          'caption',
+          'createdAt',
+        ],
+        include: [{ model: User, attributes: ['username'] }],
+      });
+
+      return posts;
+    }
+
+    return this.postRepo.findAll({
+      where: { status: Status.POSTED },
+      order: [['createdAt', 'DESC']],
+      include: [{ model: User, attributes: ['username'] }],
+    });
   }
 
   findOne(id: number) {

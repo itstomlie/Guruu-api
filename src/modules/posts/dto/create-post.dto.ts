@@ -1,7 +1,7 @@
 import { PostVisibility, Status } from '../entities/post.entity';
 
 interface Question {
-  question: string;
+  title: string;
   type: string;
   options: string[];
   answer: string;

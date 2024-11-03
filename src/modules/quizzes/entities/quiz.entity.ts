@@ -9,9 +9,11 @@ import {
   AllowNull,
   ForeignKey,
   BelongsTo,
+  HasMany,
 } from 'sequelize-typescript';
 
 import { Post } from 'src/modules/posts/entities/post.entity';
+import { Question } from './question.entity';
 
 @Table({
   tableName: 'quizzes',
@@ -57,4 +59,7 @@ export class Quiz extends Model<Quiz> {
 
   @BelongsTo(() => Post)
   post: Post;
+
+  @HasMany(() => Question)
+  questions: Question[];
 }
