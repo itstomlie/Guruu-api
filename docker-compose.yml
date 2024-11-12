@@ -1,0 +1,15 @@
+services:
+  app:
+    image: guru-server
+    container_name: guru-server
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      - SUPABASE_JWT_SECRET=Q8mr1sftHac+GVIwlqBZs6hu3ChMGIoyAS/yuJC7l5AxZCGE9Fjk5uiJ4QeAz6dcTu4rtzDzI5nqcAKtwo0Vpg==
+      - SUPABASE_HOST=aws-0-ap-southeast-1.pooler.supabase.com
+      - SUPABASE_PORT=6543
+      - SUPABASE_USERNAME=postgres.crilujirdfczplpdeltx
+      - SUPABASE_PASSWORD=QTvCftteCv84ekzR

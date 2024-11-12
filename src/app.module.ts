@@ -7,15 +7,32 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { UsersModule } from './modules/users/users.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { Post } from './modules/posts/entities/post.entity';
-import { User } from './modules/users/user.entity';
-import { Quiz } from './modules/quizzes/entities/quiz.entity';
-import { QuestionCategory } from './modules/quizzes/entities/questionCategory.entity';
-import { Question } from './modules/quizzes/entities/question.entity';
-import { Option } from './modules/quizzes/entities/option.entity';
-import { Answer } from './modules/quizzes/entities/answer.entity';
+import { User } from './modules/users/entities/user.entity';
+import { ThrottlerModule } from '@nestjs/throttler';
+import {
+  Quiz,
+  QuestionCategory,
+  Question,
+  Option,
+  Answer,
+} from './modules/quizzes/entities/index.entity';
+import { Character } from './modules/users/entities/character.entity';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { VideosModule } from './modules/videos/videos.module';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public', 'videos'),
+      serveRoot: '/videos', // This sets the route where the files will be accessible
+    }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
     SequelizeModule.forRootAsync({
@@ -26,13 +43,23 @@ import { Answer } from './modules/quizzes/entities/answer.entity';
         username: configService.get<string>('SUPABASE_USERNAME'),
         password: configService.get<string>('SUPABASE_PASSWORD'),
         database: 'postgres',
-        models: [User, Post, Quiz, QuestionCategory, Question, Option, Answer],
+        models: [
+          User,
+          Post,
+          Quiz,
+          QuestionCategory,
+          Question,
+          Option,
+          Answer,
+          Character,
+        ],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
     UsersModule,
     PostsModule,
+    VideosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

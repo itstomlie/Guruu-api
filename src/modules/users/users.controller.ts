@@ -10,7 +10,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './user.entity';
+import { User } from './entities/user.entity';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -19,10 +19,8 @@ export class UsersController {
   async create(@Body() createUserDto: Partial<User>): Promise<User> {
     try {
       const user = await this.usersService.create(createUserDto);
-      console.log('🚀 ~ UsersController ~ create ~ user:', user);
       return user;
     } catch (error) {
-      console.log('🚀 ~ UsersController ~ create ~ error:', error);
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new HttpException(
           'Username already exists, please try another username',
@@ -38,8 +36,18 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
+  @Get(':id/character')
+  async findOneCharacter(@Param('id') id: string): Promise<any> {
+    const character = await this.usersService.findOneCharacterByUserId(id);
+    if (!character) {
+      throw new HttpException('Character not found', HttpStatus.NOT_FOUND);
+    }
+
+    return character;
+  }
+
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<User> {
+  async findOne(@Param('id') id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -47,9 +55,14 @@ export class UsersController {
     return user;
   }
 
+  @Get('/:id/posts')
+  findPostsByUserId(@Param('id') id: string) {
+    return this.usersService.findPostsByUserId(id);
+  }
+
   @Put(':id')
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateUserDto: Partial<User>,
   ): Promise<User> {
     const updatedUser = await this.usersService.update(id, updateUserDto);
@@ -60,7 +73,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     const user = await this.usersService.findOne(id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { QuizzesService } from './quizzes.service';
 import { QuizzesController } from './quizzes.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 import { Quiz } from './entities/quiz.entity';
 import { Question } from './entities/question.entity';
 import { QuestionCategory } from './entities/questionCategory.entity';

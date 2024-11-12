@@ -8,8 +8,10 @@ import {
   Unique,
   AllowNull,
   HasMany,
+  HasOne,
 } from 'sequelize-typescript';
-import { Post } from '../posts/entities/post.entity';
+import { Post } from '../../posts/entities/post.entity';
+import { Character } from './character.entity';
 
 export enum UserRole {
   SUPER_ADMIN = 'super_admin',
@@ -36,6 +38,16 @@ export class User extends Model<User> {
     type: DataType.STRING(50),
   })
   username: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  firstName: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  lastName: string;
 
   @Unique
   @AllowNull(false)
@@ -79,4 +91,7 @@ export class User extends Model<User> {
 
   @HasMany(() => Post)
   posts: Post[];
+
+  @HasOne(() => Character)
+  character: Character;
 }

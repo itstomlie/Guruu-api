@@ -9,5 +9,6 @@ import { QuizzesModule } from '../quizzes/quizzes.module';
   imports: [SequelizeModule.forFeature([Post]), QuizzesModule],
   controllers: [PostsController],
   providers: [PostsService],
+  exports: [PostsService],
 })
 export class PostsModule {}

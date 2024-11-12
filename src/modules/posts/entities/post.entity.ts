@@ -11,7 +11,7 @@ import {
   BelongsTo,
   HasOne,
 } from 'sequelize-typescript';
-import { User } from '../../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { Quiz } from 'src/modules/quizzes/entities/quiz.entity';
 
 export enum PostVisibility {

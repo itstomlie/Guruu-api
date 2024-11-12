@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 import { getModelToken, InjectModel } from '@nestjs/sequelize';
 import { Quiz } from './entities/quiz.entity';
 import { QuestionCategory } from './entities/questionCategory.entity';

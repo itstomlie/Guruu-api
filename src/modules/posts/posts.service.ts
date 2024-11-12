@@ -4,11 +4,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { getModelToken } from '@nestjs/sequelize';
 import { Post, PostVisibility, Status } from './entities/post.entity';
 import { QuizzesService } from '../quizzes/quizzes.service';
-import { Quiz } from '../quizzes/entities/quiz.entity';
-import { Question } from '../quizzes/entities/question.entity';
-import { Answer } from '../quizzes/entities/answer.entity';
-import { Option } from '../quizzes/entities/option.entity';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
+import Pagination from 'src/common/helpers/pagination';
 
 @Injectable()
 export class PostsService {
@@ -21,45 +18,77 @@ export class PostsService {
   async create(createPostDto: Partial<CreatePostDto>): Promise<Post> {
     const post = await this.postRepo.create(createPostDto);
 
-    await this.quizzesService.createQuiz({
-      postId: post.id,
-      questions: createPostDto.questions,
-    });
-
-    return post;
-  }
-
-  async findAll({ lean }) {
-    if (lean) {
-      const posts = await this.postRepo.findAll({
-        where: [
-          { status: Status.POSTED },
-          { visibility: PostVisibility.PUBLIC },
-        ],
-        order: [['createdAt', 'DESC']],
-        attributes: [
-          'id',
-          'videoUrl',
-          'thumbnailUrl',
-          'title',
-          'caption',
-          'createdAt',
-        ],
-        include: [{ model: User, attributes: ['username'] }],
+    if (createPostDto.questions && createPostDto.questions.length > 0) {
+      await this.quizzesService.createQuiz({
+        postId: post.id,
+        questions: createPostDto.questions,
       });
 
-      return posts;
+      return post;
     }
+  }
 
-    return this.postRepo.findAll({
-      where: { status: Status.POSTED },
+  async findAll({
+    userId,
+    page,
+    size,
+  }: {
+    userId?: string;
+    page?: number;
+    size?: number;
+  }) {
+    const { limit, offset } = Pagination.getPagination(page, size);
+    const posts = await this.postRepo.findAndCountAll({
+      where: { status: Status.POSTED, visibility: PostVisibility.PUBLIC },
       order: [['createdAt', 'DESC']],
-      include: [{ model: User, attributes: ['username'] }],
+      limit,
+      offset,
+      attributes: [
+        'id',
+        'videoUrl',
+        'thumbnailUrl',
+        'title',
+        'caption',
+        'createdAt',
+      ],
+      include: [
+        {
+          model: User,
+          attributes: ['username'],
+          ...(userId && { where: { id: userId } }),
+        },
+      ],
     });
+
+    const { totalItems, totalPages, currentPage, data } =
+      Pagination.getPagingData(posts, page, limit);
+
+    return { totalItems, totalPages, currentPage, data };
   }
 
   findOne(id: number) {
     return `This action returns a #${id} post`;
+  }
+
+  async findPostsByUserId(userId: string) {
+    const posts = await this.postRepo.findAll({
+      where: {
+        userId: userId,
+        status: Status.POSTED,
+        visibility: PostVisibility.PUBLIC,
+      },
+      order: [['createdAt', 'DESC']],
+      attributes: [
+        'id',
+        'videoUrl',
+        'thumbnailUrl',
+        'title',
+        'caption',
+        'createdAt',
+      ],
+    });
+
+    return posts;
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {

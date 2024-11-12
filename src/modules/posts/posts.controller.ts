@@ -24,8 +24,11 @@ export class PostsController {
   }
 
   @Get()
-  findAll(@Query() query: { lean: boolean }) {
-    return this.postsService.findAll({ lean: query.lean });
+  findAll(
+    @Query()
+    { userId, page, size }: { userId?: string; page?: number; size?: number },
+  ) {
+    return this.postsService.findAll({ userId, page, size });
   }
 
   @Get(':id')
