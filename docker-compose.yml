@@ -1,15 +1,30 @@
 services:
   app:
-    image: guru-server
-    container_name: guru-server
+    image: guru-api:0.0.2
+    container_name: guru-api
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        USERNAME: ${USERNAME}
+        PASSWORD: ${PASSWORD}
     ports:
       - '3000:3000'
+      - '9898:22'
     environment:
-      - SUPABASE_JWT_SECRET=Q8mr1sftHac+GVIwlqBZs6hu3ChMGIoyAS/yuJC7l5AxZCGE9Fjk5uiJ4QeAz6dcTu4rtzDzI5nqcAKtwo0Vpg==
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
       - SUPABASE_HOST=aws-0-ap-southeast-1.pooler.supabase.com
       - SUPABASE_PORT=6543
       - SUPABASE_USERNAME=postgres.crilujirdfczplpdeltx
       - SUPABASE_PASSWORD=QTvCftteCv84ekzR
+      - USERNAME=${USERNAME}
+      - PASSWORD=${PASSWORD}
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1024M
+        reservations:
+          cpus: '0.5'
+          memory: 512M
