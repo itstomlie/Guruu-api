@@ -89,6 +89,11 @@ export class User extends Model<User> {
   })
   updatedAt: Date;
 
+  @Column({
+    type: DataType.DATE,
+  })
+  deletedAt: Date;
+
   @HasMany(() => Post)
   posts: Post[];
 

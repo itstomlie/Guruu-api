@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpException, HttpStatus } from '@nestjs/common';
 import { getModelToken } from '@nestjs/sequelize';
 import { User } from './entities/user.entity';
 import { Character } from './entities/character.entity';
@@ -96,8 +96,11 @@ export class UsersService {
 
   async remove(id: string): Promise<void> {
     const user = await this.findOne(id);
-    if (user) {
-      await user.destroy();
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
+
+    await user.update({ deletedAt: new Date() });
   }
 }
