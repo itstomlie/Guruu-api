@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
+import { Waitlist } from './entities/waitlist.entity';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -28,6 +29,22 @@ export class UsersController {
         );
       }
       throw new HttpException('Failed to create user', HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  @Post('/waitlists')
+  async createWaitlist(
+    @Body() createWaitlist: Partial<Waitlist>,
+  ): Promise<Waitlist> {
+    console.log('🚀 ~ UsersController ~ createWaitlist:', createWaitlist);
+    try {
+      const waitlist = await this.usersService.createWaitlist(createWaitlist);
+      return waitlist;
+    } catch (error) {
+      throw new HttpException(
+        'Failed to create waitlist',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

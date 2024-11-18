@@ -20,6 +20,7 @@ import { Character } from './modules/users/entities/character.entity';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { VideosModule } from './modules/videos/videos.module';
+import { Waitlist } from './modules/users/entities/waitlist.entity';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { VideosModule } from './modules/videos/videos.module';
           Option,
           Answer,
           Character,
+          Waitlist,
         ],
         synchronize: true,
       }),

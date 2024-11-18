@@ -26,6 +26,7 @@ RUN npm install
 # Bundle app source
 COPY . .
 
+
 # Copy the .env and .env.development files
 COPY .env ./
 

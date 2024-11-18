@@ -3,6 +3,7 @@ import { getModelToken } from '@nestjs/sequelize';
 import { User } from './entities/user.entity';
 import { Character } from './entities/character.entity';
 import { PostsService } from '../posts/posts.service';
+import { Waitlist } from './entities/waitlist.entity';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,9 @@ export class UsersService {
 
     @Inject(getModelToken(Character))
     private readonly characterRepo: typeof Character,
+
+    @Inject(getModelToken(Waitlist))
+    private readonly waitlistRepo: typeof Waitlist,
 
     private readonly postsService: PostsService,
   ) {}
@@ -29,6 +33,12 @@ export class UsersService {
       gems: 0,
     });
     return user;
+  }
+
+  async createWaitlist(createWaitlist: Partial<Waitlist>): Promise<Waitlist> {
+    const waitlist = await this.waitlistRepo.create(createWaitlist);
+
+    return waitlist;
   }
 
   async findAll(): Promise<User[]> {
