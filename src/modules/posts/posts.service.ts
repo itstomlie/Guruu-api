@@ -6,6 +6,7 @@ import { Post, PostVisibility, Status } from './entities/post.entity';
 import { QuizzesService } from '../quizzes/quizzes.service';
 import { User } from '../users/entities/user.entity';
 import Pagination from 'src/common/helpers/pagination';
+import { Quiz } from '../quizzes/entities/quiz.entity';
 
 @Injectable()
 export class PostsService {
@@ -56,6 +57,10 @@ export class PostsService {
           model: User,
           attributes: ['username'],
           ...(userId && { where: { id: userId } }),
+        },
+        {
+          model: Quiz,
+          attributes: ['id'],
         },
       ],
     });
