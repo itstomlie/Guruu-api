@@ -5,7 +5,7 @@ export class AppService {
   status(): { success: boolean; message: string; data: any } {
     return {
       success: true,
-      message: 'Server is running..',
+      message: 'Server is running...',
       data: {},
     };
   }
