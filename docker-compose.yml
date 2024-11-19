@@ -9,8 +9,8 @@ services:
         USERNAME: ${USERNAME}
         PASSWORD: ${PASSWORD}
     ports:
-      - '3000:3000'
-      - '9898:22'
+      - '${APP_PORT}:3000'
+      - '${SSH_PORT}:22'
     environment:
       - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
       - SUPABASE_HOST=aws-0-ap-southeast-1.pooler.supabase.com
