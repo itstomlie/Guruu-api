@@ -1,6 +1,6 @@
 services:
   app:
-    image: guru-api:0.0.2
+    image: guru-api:latest
     container_name: guru-api
     build:
       context: .
