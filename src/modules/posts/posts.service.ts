@@ -17,7 +17,10 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: Partial<CreatePostDto>): Promise<Post> {
-    const post = await this.postRepo.create(createPostDto);
+    const post = await this.postRepo.create({
+      ...createPostDto,
+      status: Status.DRAFT,
+    });
 
     if (createPostDto.questions && createPostDto.questions.length > 0) {
       await this.quizzesService.createQuiz({
