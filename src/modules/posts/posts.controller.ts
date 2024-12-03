@@ -26,9 +26,19 @@ export class PostsController {
   @Get()
   findAll(
     @Query()
-    { userId, page, size }: { userId?: string; page?: number; size?: number },
+    {
+      userId,
+      page,
+      size,
+      tags,
+    }: {
+      userId?: string;
+      page?: number;
+      size?: number;
+      tags?: string;
+    },
   ) {
-    return this.postsService.findAll({ userId, page, size });
+    return this.postsService.findAll({ userId, page, size, tags });
   }
 
   @Get(':id')

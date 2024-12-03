@@ -10,9 +10,13 @@ import {
   ForeignKey,
   BelongsTo,
   HasOne,
+  HasMany,
+  BelongsToMany,
 } from 'sequelize-typescript';
 import { User } from '../../users/entities/user.entity';
 import { Quiz } from 'src/modules/quizzes/entities/quiz.entity';
+import { Tag } from './tag.entity';
+import { PostTag } from './postTag.entity';
 
 export enum PostVisibility {
   PUBLIC = 'public',
@@ -100,4 +104,7 @@ export class Post extends Model<Post> {
 
   @HasOne(() => Quiz)
   quiz: Quiz;
+
+  @BelongsToMany(() => Tag, () => PostTag)
+  tags: Tag[];
 }

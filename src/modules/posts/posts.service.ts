@@ -7,6 +7,7 @@ import { QuizzesService } from '../quizzes/quizzes.service';
 import { User } from '../users/entities/user.entity';
 import Pagination from 'src/common/helpers/pagination';
 import { Quiz } from '../quizzes/entities/quiz.entity';
+import { Tag } from './entities/tag.entity';
 
 @Injectable()
 export class PostsService {
@@ -36,11 +37,14 @@ export class PostsService {
     userId,
     page,
     size,
+    tags,
   }: {
     userId?: string;
     page?: number;
     size?: number;
+    tags?: string;
   }) {
+    const tagsArr = tags.split(',');
     const { limit, offset } = Pagination.getPagination(page, size);
     const posts = await this.postRepo.findAndCountAll({
       where: { status: Status.POSTED, visibility: PostVisibility.PUBLIC },
@@ -64,6 +68,11 @@ export class PostsService {
         {
           model: Quiz,
           attributes: ['id'],
+        },
+        {
+          model: Tag,
+          attributes: ['id', 'tag'],
+          ...(tags && { where: { tag: tagsArr } }),
         },
       ],
     });

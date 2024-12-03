@@ -21,12 +21,14 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { VideosModule } from './modules/videos/videos.module';
 import { Waitlist } from './modules/users/entities/waitlist.entity';
+import { PostTag } from './modules/posts/entities/postTag.entity';
+import { Tag } from './modules/posts/entities/tag.entity';
 
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public', 'videos'),
-      serveRoot: '/videos', // This sets the route where the files will be accessible
+      serveRoot: '/videos',
     }),
     ThrottlerModule.forRoot([
       {
@@ -54,6 +56,8 @@ import { Waitlist } from './modules/users/entities/waitlist.entity';
           Answer,
           Character,
           Waitlist,
+          Tag,
+          PostTag,
         ],
         synchronize: true,
       }),
