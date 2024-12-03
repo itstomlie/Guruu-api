@@ -15,7 +15,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   async protected(@Req() req) {
     return {
-      message: 'AuthGuard worksss 🎉',
+      message: 'AuthGuard works 🎉',
       authenticated_user: req.user,
     };
   }
