@@ -44,7 +44,6 @@ export class PostsService {
     size?: number;
     tags?: string;
   }) {
-    const tagsArr = tags.split(',');
     const { limit, offset } = Pagination.getPagination(page, size);
     const posts = await this.postRepo.findAndCountAll({
       where: { status: Status.POSTED, visibility: PostVisibility.PUBLIC },
@@ -72,7 +71,7 @@ export class PostsService {
         {
           model: Tag,
           attributes: ['id', 'tag'],
-          ...(tags && { where: { tag: tagsArr } }),
+          ...(tags && { where: { tag: tags.split(',') } }),
         },
       ],
     });

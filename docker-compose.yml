@@ -19,6 +19,11 @@ services:
       - SUPABASE_PASSWORD=QTvCftteCv84ekzR
       - USERNAME=${USERNAME}
       - PASSWORD=${PASSWORD}
+      - HOSTED_SUPABASE_JWT_SECRET=${HOSTED_SUPABASE_JWT_SECRET}
+      - HOSTED_SUPABASE_HOST=157.173.121.95
+      - HOSTED_SUPABASE_PORT=6543
+      - HOSTED_SUPABASE_USERNAME=postgres.guruu
+      - HOSTED_SUPABASE_PASSWORD=password
     restart: unless-stopped
     deploy:
       resources:
