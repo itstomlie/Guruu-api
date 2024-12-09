@@ -9,6 +9,11 @@ CREATE TYPE post_status AS ENUM (
     'banned'
 );
 
+CREATE TYPE user_role AS ENUM (
+    'super_admin',
+    'moderator',
+    'user'
+);
 
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -18,7 +23,7 @@ CREATE TABLE users (
   email VARCHAR(100) UNIQUE NOT NULL,
   profile_picture_url TEXT,
   bio TEXT,
-  role ENUM('super_admin', 'moderator', 'user') NOT NULL DEFAULT 'user',
+  role user_role NOT NULL DEFAULT 'user',
   last_login TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP,
@@ -29,7 +34,7 @@ CREATE TABLE users (
 
 CREATE TABLE posts (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id VARCHAR(50) NOT NULL,
+    user_id UUID NOT NULL,
     video_url TEXT UNIQUE NOT NULL,
     thumbnail_url TEXT,
     title TEXT,
