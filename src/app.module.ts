@@ -41,10 +41,10 @@ import { Tag } from './modules/posts/entities/tag.entity';
     SequelizeModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({
         dialect: 'postgres',
-        host: configService.get<string>('HOSTED_SUPABASE_HOST'),
-        port: configService.get<number>('HOSTED_SUPABASE_PORT'),
-        username: configService.get<string>('HOSTED_SUPABASE_USERNAME'),
-        password: configService.get<string>('HOSTED_SUPABASE_PASSWORD'),
+        host: configService.get<string>('SUPABASE_HOST'),
+        port: configService.get<number>('SUPABASE_PORT'),
+        username: configService.get<string>('SUPABASE_USERNAME'),
+        password: configService.get<string>('SUPABASE_PASSWORD'),
         database: 'postgres',
         models: [
           User,

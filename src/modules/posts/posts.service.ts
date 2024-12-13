@@ -61,7 +61,7 @@ export class PostsService {
       include: [
         {
           model: User,
-          attributes: ['username'],
+          attributes: ['username', 'profilePictureUrl'],
           ...(userId && { where: { id: userId } }),
         },
         {

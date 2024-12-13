@@ -46,7 +46,29 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    return this.userRepo.findOne<User>({
+    // const regenRateMs = 60 * 60 * 1000;
+    // const calculateHpRegeneration = (
+    //   currentHp: number,
+    //   maxHp: number,
+    //   lastUpdate: string,
+    //   regenRateMs: number,
+    // ) => {
+    //   const now = Date.now();
+    //   const lastUpdateTime = new Date(lastUpdate).getTime();
+    //   const elapsed = now - lastUpdateTime;
+
+    //   // Calculate how many HP can be regenerated
+    //   const hpToRegenerate = Math.floor(elapsed / regenRateMs);
+    //   const newHp = Math.min(currentHp + hpToRegenerate, maxHp);
+
+    //   // Update the last update timestamp to account only for the elapsed time used
+    //   const remainingTime = elapsed % regenRateMs; // Time leftover for next HP
+    //   const newLastUpdate = new Date(now - remainingTime);
+
+    //   return { newHp, newLastUpdate };
+    // };
+
+    const user = await this.userRepo.findOne<User>({
       where: { id },
       include: {
         model: Character,
@@ -63,6 +85,15 @@ export class UsersService {
         ],
       },
     });
+
+    // const { newHp, newLastUpdate } = calculateHpRegeneration(
+    //   user.character.health,
+    //   user.character.maxHealth,
+    //   lastUpdate,
+    //   regenRateMs,
+    // );
+
+    return user;
   }
 
   async findOneCharacterByUserId(userId: string): Promise<Character> {
