@@ -46,27 +46,25 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<User> {
-    // const regenRateMs = 60 * 60 * 1000;
-    // const calculateHpRegeneration = (
-    //   currentHp: number,
-    //   maxHp: number,
-    //   lastUpdate: string,
-    //   regenRateMs: number,
-    // ) => {
-    //   const now = Date.now();
-    //   const lastUpdateTime = new Date(lastUpdate).getTime();
-    //   const elapsed = now - lastUpdateTime;
+    const regenRateMs = 60 * 1000;
+    const calculateHpRegeneration = (
+      currentHp: number,
+      maxHp: number,
+      lastUpdate: Date,
+      regenRateMs: number,
+    ) => {
+      const now = Date.now();
+      const lastUpdateTime = new Date(lastUpdate).getTime();
+      const elapsed = now - lastUpdateTime;
 
-    //   // Calculate how many HP can be regenerated
-    //   const hpToRegenerate = Math.floor(elapsed / regenRateMs);
-    //   const newHp = Math.min(currentHp + hpToRegenerate, maxHp);
+      const hpToRegenerate = Math.floor(elapsed / regenRateMs);
+      const newHp = Math.min(currentHp + hpToRegenerate, maxHp);
 
-    //   // Update the last update timestamp to account only for the elapsed time used
-    //   const remainingTime = elapsed % regenRateMs; // Time leftover for next HP
-    //   const newLastUpdate = new Date(now - remainingTime);
+      const remainingTime = elapsed % regenRateMs;
+      const newLastUpdate = new Date(now - remainingTime);
 
-    //   return { newHp, newLastUpdate };
-    // };
+      return { newHp, newLastUpdate };
+    };
 
     const user = await this.userRepo.findOne<User>({
       where: { id },
@@ -82,16 +80,31 @@ export class UsersService {
           'gems',
           'maxHealth',
           'maxExperience',
+          'lastHpUpdateTime',
         ],
       },
     });
 
-    // const { newHp, newLastUpdate } = calculateHpRegeneration(
-    //   user.character.health,
-    //   user.character.maxHealth,
-    //   lastUpdate,
-    //   regenRateMs,
-    // );
+    if (user.character.health < user.character.maxHealth) {
+      const { newHp, newLastUpdate } = calculateHpRegeneration(
+        user.character.health,
+        user.character.maxHealth,
+        user.character.lastHpUpdateTime,
+        regenRateMs,
+      );
+
+      await this.characterRepo.update(
+        { health: newHp, lastHpUpdateTime: newLastUpdate },
+        { where: { id: user.character.id } },
+      );
+    } else {
+      if (user.character.lastHpUpdateTime) {
+        await this.characterRepo.update(
+          { lastHpUpdateTime: null },
+          { where: { id: user.character.id } },
+        );
+      }
+    }
 
     return user;
   }

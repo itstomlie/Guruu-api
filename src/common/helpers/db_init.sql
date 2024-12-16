@@ -110,6 +110,7 @@ CREATE TABLE characters (
   max_experience INT DEFAULT 25,
   coins INT DEFAULT 0,
   gems INT DEFAULT 0,
+  last_hp_update_time TIMESTAMP DEFAULT NULL
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NULL
 );
@@ -149,3 +150,4 @@ INSERT INTO
 VALUES
   (DEFAULT, 'multiple-choice', NOW(), NULL),
   (DEFAULT, 'true-false', NOW(), NULL);
+  (DEFAULT, 'fill-in-the-blanks', NOW(), NULL);

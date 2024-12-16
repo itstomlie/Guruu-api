@@ -79,6 +79,11 @@ export class Character extends Model<Character> {
   })
   gems: number;
 
+  @Column({
+    type: DataType.DATE,
+  })
+  lastHpUpdateTime: Date;
+
   @CreatedAt
   @Default(DataType.NOW)
   @Column({
