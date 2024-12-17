@@ -12,18 +12,13 @@ services:
       - '${APP_PORT}:3000'
       - '${SSH_PORT}:22'
     environment:
-      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
-      - SUPABASE_HOST=aws-0-ap-southeast-1.pooler.supabase.com
-      - SUPABASE_PORT=6543
-      - SUPABASE_USERNAME=postgres.crilujirdfczplpdeltx
-      - SUPABASE_PASSWORD=QTvCftteCv84ekzR
       - USERNAME=${USERNAME}
       - PASSWORD=${PASSWORD}
-      - HOSTED_SUPABASE_JWT_SECRET=${HOSTED_SUPABASE_JWT_SECRET}
-      - HOSTED_SUPABASE_HOST=5.189.181.129
-      - HOSTED_SUPABASE_PORT=6543
-      - HOSTED_SUPABASE_USERNAME=postgres.guruu
-      - HOSTED_SUPABASE_PASSWORD=password
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET}
+      - SUPABASE_HOST=${SUPABASE_HOST}
+      - SUPABASE_PORT=${SUPABASE_PORT}
+      - SUPABASE_USERNAME=${SUPABASE_USERNAME}
+      - SUPABASE_PASSWORD=${SUPABASE_PASSWORD}
     restart: unless-stopped
     deploy:
       resources:

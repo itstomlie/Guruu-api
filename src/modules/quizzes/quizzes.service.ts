@@ -80,7 +80,7 @@ export class QuizzesService {
       attributes: ['id', 'title', 'description'],
       include: {
         model: Question,
-        attributes: ['id', 'title'],
+        attributes: ['id', 'displayTitle', 'title'],
         include: [
           {
             model: QuestionCategory,

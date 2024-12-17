@@ -47,6 +47,11 @@ export class Question extends Model<Question> {
   @Column({
     type: DataType.TEXT,
   })
+  displayTitle: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
   title: string;
 
   @Default(DataType.NOW)

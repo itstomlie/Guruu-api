@@ -74,6 +74,7 @@ CREATE TABLE questions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- Using UUIDs for the primary key
     quiz_id uuid NOT NULL, -- Foreign key referencing the quizzes table
     category_id uuid NOT NULL, -- Foreign key referencing the question_categories table
+    display_title TEXT, -- The parsed question text
     title TEXT NOT NULL, -- The actual question text
     created_at TIMESTAMP DEFAULT NOW(), -- Timestamp for when the question is created
     updated_at TIMESTAMP DEFAULT NULL, -- Optional timestamp for when the question is updated
