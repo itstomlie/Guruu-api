@@ -45,11 +45,12 @@ export class PostsService {
     tags?: string;
   }) {
     const { limit, offset } = Pagination.getPagination(page, size);
+    console.log('🚀 ~ PostsService ~ limit, offset:', limit, offset);
     const posts = await this.postRepo.findAndCountAll({
       where: { status: Status.POSTED, visibility: PostVisibility.PUBLIC },
       order: [['createdAt', 'DESC']],
-      limit,
-      offset,
+      limit: limit || 3,
+      offset: offset || 0,
       attributes: [
         'id',
         'videoUrl',
