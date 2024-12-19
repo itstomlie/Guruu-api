@@ -5,9 +5,9 @@ import { getModelToken } from '@nestjs/sequelize';
 import { Post, PostVisibility, Status } from './entities/post.entity';
 import { QuizzesService } from '../quizzes/quizzes.service';
 import { User } from '../users/entities/user.entity';
-import Pagination from 'src/common/helpers/pagination';
 import { Quiz } from '../quizzes/entities/quiz.entity';
 import { Tag } from './entities/tag.entity';
+import Pagination from 'src/common/helpers/pagination';
 
 @Injectable()
 export class PostsService {

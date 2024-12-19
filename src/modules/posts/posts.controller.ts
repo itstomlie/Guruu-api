@@ -33,12 +33,17 @@ export class PostsController {
       tags,
     }: {
       userId?: string;
-      page?: number;
-      size?: number;
+      page?: string;
+      size?: string;
       tags?: string;
     },
   ) {
-    return this.postsService.findAll({ userId, page, size, tags });
+    return this.postsService.findAll({
+      userId,
+      page: Number(page),
+      size: Number(size),
+      tags,
+    });
   }
 
   @Get(':id')
