@@ -31,8 +31,28 @@ export class QuizzesController {
   }
 
   @Get('/post/:id')
-  findOneByPostId(@Param('id') id: string) {
-    return this.quizzesService.findOneByPostId(id);
+  async findOneByPostId(@Param('id') id: string) {
+    const quiz = await this.quizzesService.findOneByPostId(id);
+    console.log(
+      '🚀 ~ QuizzesController ~ findOneByPostId ~ quiz:',
+      quiz.questions[2].options,
+    );
+
+    const mappedQuestions = quiz.questions.map((question) => ({
+      id: question.id,
+      displayTitle: question.displayTitle || '',
+      title: question.title,
+      type: question.questionCategory.type,
+
+      options: question.options.map((option) => option.option),
+      answer: question.answer.answer,
+    }));
+
+    console.log(
+      '🚀 ~ QuizzesController ~ mappedQuestions ~ mappedQuestions:',
+      mappedQuestions,
+    );
+    return { ...quiz, questions: mappedQuestions };
   }
 
   @Patch(':id')

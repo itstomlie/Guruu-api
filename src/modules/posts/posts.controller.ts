@@ -12,7 +12,6 @@ import {
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { JwtAuthGuard } from 'src/common/auth/guards/jwt.auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -48,7 +47,8 @@ export class PostsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postsService.findOne(+id);
+    console.log('🚀 ~ PostsController ~ findOne ~ id:', id);
+    return this.postsService.findOne(id);
   }
 
   @Patch(':id')

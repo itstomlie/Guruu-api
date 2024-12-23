@@ -72,31 +72,36 @@ export class QuizzesService {
     return `This action returns all quizzes`;
   }
 
-  findOneByPostId(id: string) {
-    return this.quizRepo.findOne({
+  async findOneByPostId(id: string) {
+    const quiz = await this.quizRepo.findOne({
       where: {
         postId: id,
       },
       attributes: ['id', 'title', 'description'],
-      include: {
-        model: Question,
-        attributes: ['id', 'displayTitle', 'title'],
-        include: [
-          {
-            model: QuestionCategory,
-            attributes: ['type'],
-          },
-          {
-            model: Option,
-            attributes: ['option'],
-          },
-          {
-            model: Answer,
-            attributes: ['answer'],
-          },
-        ],
-      },
+      include: [
+        {
+          model: Question,
+          attributes: ['id', 'displayTitle', 'title'],
+          include: [
+            {
+              model: QuestionCategory,
+              attributes: ['type'],
+            },
+            {
+              model: Option,
+              attributes: ['option', 'createdAt'],
+              order: [['createdAt', 'ASC']], // Properly specify ordering for this relation
+            },
+            {
+              model: Answer,
+              attributes: ['answer'],
+            },
+          ],
+        },
+      ],
     });
+
+    return quiz?.toJSON();
   }
 
   update(id: number, updateQuizDto: UpdateQuizDto) {

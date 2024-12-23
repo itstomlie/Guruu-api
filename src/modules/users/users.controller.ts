@@ -36,7 +36,6 @@ export class UsersController {
   async createWaitlist(
     @Body() createWaitlist: Partial<Waitlist>,
   ): Promise<Waitlist> {
-    console.log('🚀 ~ UsersController ~ createWaitlist:', createWaitlist);
     try {
       const waitlist = await this.usersService.createWaitlist(createWaitlist);
       return waitlist;
