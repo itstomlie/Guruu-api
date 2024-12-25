@@ -22,6 +22,7 @@ export class UsersController {
       const user = await this.usersService.create(createUserDto);
       return user;
     } catch (error) {
+      console.log('🚀 ~ UsersController ~ create ~ error:', error);
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new HttpException(
           'Username already exists, please try another username',

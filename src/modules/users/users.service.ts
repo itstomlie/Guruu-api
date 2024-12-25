@@ -84,25 +84,28 @@ export class UsersService {
         ],
       },
     });
+    console.log('🚀 ~ UsersService ~ findOne ~ user:', user);
 
-    if (user.character.health < user.character.maxHealth) {
-      const { newHp, newLastUpdate } = calculateHpRegeneration(
-        user.character.health,
-        user.character.maxHealth,
-        user.character.lastHpUpdateTime,
-        regenRateMs,
-      );
+    if (user.character) {
+      if (user.character.health < user.character.maxHealth) {
+        const { newHp, newLastUpdate } = calculateHpRegeneration(
+          user.character.health,
+          user.character.maxHealth,
+          user.character.lastHpUpdateTime,
+          regenRateMs,
+        );
 
-      await this.characterRepo.update(
-        { health: newHp, lastHpUpdateTime: newLastUpdate },
-        { where: { id: user.character.id } },
-      );
-    } else {
-      if (user.character.lastHpUpdateTime) {
         await this.characterRepo.update(
-          { lastHpUpdateTime: null },
+          { health: newHp, lastHpUpdateTime: newLastUpdate },
           { where: { id: user.character.id } },
         );
+      } else {
+        if (user.character.lastHpUpdateTime) {
+          await this.characterRepo.update(
+            { lastHpUpdateTime: null },
+            { where: { id: user.character.id } },
+          );
+        }
       }
     }
 

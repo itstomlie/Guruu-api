@@ -1,13 +1,17 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { getModelToken } from '@nestjs/sequelize';
 import { Post, PostVisibility, Status } from './entities/post.entity';
 import { QuizzesService } from '../quizzes/quizzes.service';
 import { User } from '../users/entities/user.entity';
-import { Quiz } from '../quizzes/entities/quiz.entity';
+import { Quiz, QuizStatus } from '../quizzes/entities/quiz.entity';
 import { Tag } from './entities/tag.entity';
 import Pagination from 'src/common/helpers/pagination';
+import { Op, where } from 'sequelize';
+import moment from 'moment';
+import * as dayjs from 'dayjs';
+import { literal } from 'sequelize';
 
 @Injectable()
 export class PostsService {
@@ -18,38 +22,78 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: Partial<CreatePostDto>): Promise<Post> {
-    const post = await this.postRepo.create({
-      ...createPostDto,
-      status: Status.DRAFT,
-    });
+    let post;
 
-    if (createPostDto.questions && createPostDto.questions.length > 0) {
-      await this.quizzesService.createQuiz({
-        postId: post.id,
-        questions: createPostDto.questions,
+    if (createPostDto.id) {
+      post = await this.postRepo.findOne({
+        where: { id: createPostDto.id },
       });
 
+      if (!post)
+        throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
+
+      if (createPostDto.questions && createPostDto.questions.length > 0) {
+        console.log(
+          '🚀 ~ PostsService ~ create ~ createPostDto.id:',
+          createPostDto.id,
+        );
+        let quiz = await this.quizzesService.findOneByPostId(createPostDto.id);
+        console.log('🚀 ~ PostsService ~ create ~ quiz:', quiz);
+
+        if (quiz) {
+          await this.quizzesService.update(quiz.id, {
+            status: QuizStatus.INACTIVE,
+          });
+        }
+
+        await this.quizzesService.createQuiz({
+          postId: createPostDto.id,
+          questions: createPostDto.questions,
+        });
+      }
+    } else {
+      post = await this.postRepo.create({
+        ...createPostDto,
+        status: Status.DRAFT,
+      });
+
+      if (createPostDto.questions && createPostDto.questions.length > 0) {
+        await this.quizzesService.createQuiz({
+          postId: post.id,
+          questions: createPostDto.questions,
+          status: QuizStatus.ACTIVE,
+        });
+      }
       return post;
     }
   }
 
   async findAll({
     userId,
-    page,
     size,
     tags,
+    cursor,
   }: {
     userId?: string;
-    page?: number;
     size?: number;
     tags?: string;
+    cursor?: string;
   }) {
-    const { limit, offset } = Pagination.getPagination(page, size);
-    const posts = await this.postRepo.findAndCountAll({
-      where: { status: Status.POSTED, visibility: PostVisibility.PUBLIC },
+    const whereClause: any = {
+      status: Status.POSTED,
+      visibility: PostVisibility.PUBLIC,
+    };
+
+    if (cursor) {
+      whereClause.createdAt = {
+        [Op.lte]: literal(`'${cursor}'`),
+      };
+    }
+
+    const posts = await this.postRepo.findAll({
+      where: whereClause,
       order: [['createdAt', 'DESC']],
-      limit: limit || 3,
-      offset: offset || 0,
+      limit: size || 3,
       attributes: [
         'id',
         'videoUrl',
@@ -71,15 +115,19 @@ export class PostsService {
         {
           model: Tag,
           attributes: ['id', 'tag'],
+          required: false,
           ...(tags && { where: { tag: tags.split(',') } }),
         },
       ],
     });
 
-    const { totalItems, totalPages, currentPage, data } =
-      Pagination.getPagingData(posts, page, limit);
-
-    return { totalItems, totalPages, currentPage, data };
+    return {
+      posts,
+      nextCursor:
+        posts.length > 0
+          ? new Date(posts[posts.length - 1].createdAt).toLocaleString()
+          : null,
+    };
   }
 
   findOne(id: string) {

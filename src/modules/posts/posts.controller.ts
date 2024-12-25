@@ -27,27 +27,26 @@ export class PostsController {
     @Query()
     {
       userId,
-      page,
       size,
       tags,
+      cursor,
     }: {
       userId?: string;
-      page?: string;
       size?: string;
       tags?: string;
+      cursor?: string;
     },
   ) {
     return this.postsService.findAll({
       userId,
-      page: Number(page),
       size: Number(size),
       tags,
+      cursor,
     });
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    console.log('🚀 ~ PostsController ~ findOne ~ id:', id);
     return this.postsService.findOne(id);
   }
 

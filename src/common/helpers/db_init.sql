@@ -15,6 +15,12 @@ CREATE TYPE user_role AS ENUM (
     'user'
 );
 
+CREATE TYPE quiz_status AS ENUM (
+    'active',
+    'inactive',
+);
+
+
 CREATE TABLE users (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   username VARCHAR(100) UNIQUE NOT NULL,
@@ -55,9 +61,10 @@ CREATE TABLE posts (
 
 CREATE TABLE quizzes (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  post_id uuid UNIQUE NOT NULL,
+  post_id uuid NOT NULL,
   title TEXT,
   description TEXT,
+  status quiz_status NOT NULL DEFAULT 'active',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP,
   FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
@@ -111,7 +118,7 @@ CREATE TABLE characters (
   max_experience INT DEFAULT 25,
   coins INT DEFAULT 0,
   gems INT DEFAULT 0,
-  last_hp_update_time TIMESTAMP DEFAULT NULL
+  last_hp_update_time TIMESTAMP DEFAULT NULL,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NULL
 );
@@ -150,5 +157,5 @@ INSERT INTO
   )
 VALUES
   (DEFAULT, 'multiple-choice', NOW(), NULL),
-  (DEFAULT, 'true-false', NOW(), NULL);
+  (DEFAULT, 'true-false', NOW(), NULL),
   (DEFAULT, 'fill-in-the-blanks', NOW(), NULL);

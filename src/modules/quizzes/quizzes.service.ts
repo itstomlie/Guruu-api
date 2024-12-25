@@ -3,7 +3,7 @@ import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
 import { User } from '../users/entities/user.entity';
 import { getModelToken, InjectModel } from '@nestjs/sequelize';
-import { Quiz } from './entities/quiz.entity';
+import { Quiz, QuizStatus } from './entities/quiz.entity';
 import { QuestionCategory } from './entities/questionCategory.entity';
 import { Question } from './entities/question.entity';
 import { Answer } from './entities/answer.entity';
@@ -21,47 +21,57 @@ export class QuizzesService {
   ) {}
 
   async createQuiz(createQuizDto: Partial<CreateQuizDto>) {
-    const quiz = await this.quizRepo.create(createQuizDto);
+    try {
+      console.log(
+        '🚀 ~ QuizzesService ~ createQuizDto.questions.forEach ~ createQuizDto.questions:',
+        createQuizDto.questions,
+      );
 
-    createQuizDto.questions.forEach(async (q) => {
-      const category = await this.questionCategoryRepo.findOne({
-        where: {
-          type: q.type,
-        },
-      });
+      const quiz = await this.quizRepo.create(createQuizDto);
+      console.log('🚀 ~ QuizzesService ~ createQuiz ~ quiz:', quiz);
 
-      const question = await this.questionRepo.create({
-        quizId: quiz.id,
-        categoryId: category.id,
-        title: q.title,
-      });
-
-      if (q.type !== 'true-false') {
-        q.options.forEach(async (o) => {
-          this.optionRepo.create({
-            questionId: question.id,
-            option: o,
-          });
+      createQuizDto.questions.forEach(async (q) => {
+        const category = await this.questionCategoryRepo.findOne({
+          where: {
+            type: q.type,
+          },
         });
-      }
 
-      this.answerRepo.create({
-        questionId: question.id,
-        answer: q.answer,
+        const question = await this.questionRepo.create({
+          quizId: quiz.id,
+          categoryId: category.id,
+          title: q.title,
+        });
+
+        if (q.type !== 'true-false') {
+          q.options.forEach(async (o) => {
+            this.optionRepo.create({
+              questionId: question.id,
+              option: o,
+            });
+          });
+        }
+
+        this.answerRepo.create({
+          questionId: question.id,
+          answer: q.answer,
+        });
       });
-    });
 
-    //  questions: [
-    //     {
-    //       id: '',
-    //       title: 'whatt?',
-    //       type: 'multiple-choice',
-    //       options: [Array],
-    //       answer: 'best'
-    //     }
-    //   ]
+      //  questions: [
+      //     {
+      //       id: '',
+      //       title: 'whatt?',
+      //       type: 'multiple-choice',
+      //       options: [Array],
+      //       answer: 'best'
+      //     }
+      //   ]
 
-    return 'Create Quiz Success';
+      return 'Create Quiz Success';
+    } catch (error) {
+      console.log('🚀 ~ QuizzesService ~ createQuiz ~ error:', error);
+    }
   }
 
   createQuestionCategory(category: string) {
@@ -76,6 +86,7 @@ export class QuizzesService {
     const quiz = await this.quizRepo.findOne({
       where: {
         postId: id,
+        status: QuizStatus.ACTIVE,
       },
       attributes: ['id', 'title', 'description'],
       include: [
@@ -90,7 +101,6 @@ export class QuizzesService {
             {
               model: Option,
               attributes: ['option', 'createdAt'],
-              order: [['createdAt', 'ASC']], // Properly specify ordering for this relation
             },
             {
               model: Answer,
@@ -104,8 +114,14 @@ export class QuizzesService {
     return quiz?.toJSON();
   }
 
-  update(id: number, updateQuizDto: UpdateQuizDto) {
-    return `This action updates a #${id} quiz`;
+  async update(id: string, updateQuizDto: Partial<UpdateQuizDto>) {
+    const quiz = await this.quizRepo.update(updateQuizDto, {
+      where: { id },
+      returning: true,
+    });
+    console.log('🚀 ~ QuizzesService ~ update ~ quiz:', quiz);
+
+    return quiz[1];
   }
 
   remove(id: number) {

@@ -8,6 +8,7 @@ interface Question {
 }
 
 export class CreatePostDto {
+  id: string;
   userId: string;
   videoUrl: string;
   thumbnailUrl: string;

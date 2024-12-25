@@ -33,10 +33,6 @@ export class QuizzesController {
   @Get('/post/:id')
   async findOneByPostId(@Param('id') id: string) {
     const quiz = await this.quizzesService.findOneByPostId(id);
-    console.log(
-      '🚀 ~ QuizzesController ~ findOneByPostId ~ quiz:',
-      quiz.questions[2].options,
-    );
 
     const mappedQuestions = quiz.questions.map((question) => ({
       id: question.id,
@@ -48,16 +44,12 @@ export class QuizzesController {
       answer: question.answer.answer,
     }));
 
-    console.log(
-      '🚀 ~ QuizzesController ~ mappedQuestions ~ mappedQuestions:',
-      mappedQuestions,
-    );
     return { ...quiz, questions: mappedQuestions };
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
-    return this.quizzesService.update(+id, updateQuizDto);
+    return this.quizzesService.update(id, updateQuizDto);
   }
 
   @Delete(':id')

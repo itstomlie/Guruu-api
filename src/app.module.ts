@@ -23,6 +23,7 @@ import { VideosModule } from './modules/videos/videos.module';
 import { Waitlist } from './modules/users/entities/waitlist.entity';
 import { PostTag } from './modules/posts/entities/postTag.entity';
 import { Tag } from './modules/posts/entities/tag.entity';
+import { time } from 'console';
 
 @Module({
   imports: [
