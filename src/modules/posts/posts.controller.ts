@@ -30,11 +30,15 @@ export class PostsController {
       size,
       tags,
       cursor,
+      search,
+      status,
     }: {
       userId?: string;
       size?: string;
       tags?: string;
       cursor?: string;
+      search?: string;
+      status?: string;
     },
   ) {
     return this.postsService.findAll({
@@ -42,7 +46,17 @@ export class PostsController {
       size: Number(size),
       tags,
       cursor,
+      search,
+      status,
     });
+  }
+
+  @Get('/users/:id')
+  findPostsByUserId(
+    @Param('id') id: string,
+    @Query() { status }: { status?: string },
+  ) {
+    return this.postsService.findPostsByUserId({ userId: id, status });
   }
 
   @Get(':id')

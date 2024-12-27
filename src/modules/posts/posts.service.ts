@@ -33,12 +33,7 @@ export class PostsService {
         throw new HttpException('Post not found', HttpStatus.NOT_FOUND);
 
       if (createPostDto.questions && createPostDto.questions.length > 0) {
-        console.log(
-          '🚀 ~ PostsService ~ create ~ createPostDto.id:',
-          createPostDto.id,
-        );
         let quiz = await this.quizzesService.findOneByPostId(createPostDto.id);
-        console.log('🚀 ~ PostsService ~ create ~ quiz:', quiz);
 
         if (quiz) {
           await this.quizzesService.update(quiz.id, {
@@ -70,17 +65,21 @@ export class PostsService {
 
   async findAll({
     userId,
-    size,
+    size = 3, // Ensure default size
     tags,
     cursor,
+    search,
+    status,
   }: {
     userId?: string;
     size?: number;
     tags?: string;
     cursor?: string;
+    search?: string;
+    status?: string;
   }) {
     const whereClause: any = {
-      status: Status.POSTED,
+      status: status ? status.split(',') : Status.POSTED,
       visibility: PostVisibility.PUBLIC,
     };
 
@@ -90,10 +89,24 @@ export class PostsService {
       };
     }
 
+    const searchConditions: any = [];
+    if (search) {
+      searchConditions.push(
+        literal(`"Post"."title" ILIKE '%${search}%'`),
+        literal(
+          `"Post"."user_id" IN (SELECT "id" FROM "users" WHERE "username" ILIKE '%${search}%')`,
+        ),
+        literal(
+          `"Post"."id" IN (SELECT "post_id" FROM "post_tags" WHERE "tag_id" IN (SELECT "id" FROM "tags" WHERE "tag" ILIKE '%${search}%'))`,
+        ),
+      );
+    }
+
     const posts = await this.postRepo.findAll({
-      where: whereClause,
-      order: [['createdAt', 'DESC']],
-      limit: size || 3,
+      where: {
+        ...whereClause,
+        ...(search && { [Op.or]: searchConditions }),
+      },
       attributes: [
         'id',
         'videoUrl',
@@ -101,31 +114,45 @@ export class PostsService {
         'title',
         'caption',
         'createdAt',
+        'userId',
+        'status',
       ],
       include: [
         {
           model: User,
-          attributes: ['username', 'profilePictureUrl'],
+          attributes: ['id', 'username', 'profilePictureUrl'],
           ...(userId && { where: { id: userId } }),
         },
         {
           model: Quiz,
           attributes: ['id'],
+          where: { status: QuizStatus.ACTIVE },
+          required: false,
         },
         {
           model: Tag,
           attributes: ['id', 'tag'],
+          through: { attributes: [] },
           required: false,
           ...(tags && { where: { tag: tags.split(',') } }),
         },
       ],
+      group: [
+        'Post.id',
+        'user.id', // Correct alias
+        'quiz.id',
+        'tags.id',
+      ],
+      order: [['createdAt', 'DESC']],
+      limit: size || 3, // Ensure valid size
+      subQuery: false,
     });
 
     return {
       posts,
       nextCursor:
         posts.length > 0
-          ? new Date(posts[posts.length - 1].createdAt).toLocaleString()
+          ? new Date(posts[posts.length - 1].createdAt).toISOString()
           : null,
     };
   }
@@ -140,6 +167,8 @@ export class PostsService {
         'title',
         'caption',
         'createdAt',
+        'userId',
+        'status',
       ],
       include: [
         {
@@ -149,21 +178,27 @@ export class PostsService {
         {
           model: Quiz,
           attributes: ['id'],
+          required: false,
         },
         {
           model: Tag,
           attributes: ['id', 'tag'],
+          required: false,
         },
       ],
     });
   }
 
-  async findPostsByUserId(userId: string) {
+  async findPostsByUserId({ userId, status }) {
+    const whereClause: any = {
+      status: status ? status.split(',') : Status.POSTED,
+      userId: userId,
+    };
+
     const posts = await this.postRepo.findAll({
       where: {
-        userId: userId,
+        ...whereClause,
       },
-      order: [['createdAt', 'DESC']],
       attributes: [
         'id',
         'videoUrl',
@@ -171,7 +206,13 @@ export class PostsService {
         'title',
         'caption',
         'createdAt',
+        'userId',
+        'status',
       ],
+      group: ['Post.id'],
+      order: [['createdAt', 'DESC']],
+      limit: 9,
+      subQuery: false,
     });
 
     return posts;

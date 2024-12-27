@@ -22,13 +22,7 @@ export class QuizzesService {
 
   async createQuiz(createQuizDto: Partial<CreateQuizDto>) {
     try {
-      console.log(
-        '🚀 ~ QuizzesService ~ createQuizDto.questions.forEach ~ createQuizDto.questions:',
-        createQuizDto.questions,
-      );
-
       const quiz = await this.quizRepo.create(createQuizDto);
-      console.log('🚀 ~ QuizzesService ~ createQuiz ~ quiz:', quiz);
 
       createQuizDto.questions.forEach(async (q) => {
         const category = await this.questionCategoryRepo.findOne({
@@ -119,7 +113,6 @@ export class QuizzesService {
       where: { id },
       returning: true,
     });
-    console.log('🚀 ~ QuizzesService ~ update ~ quiz:', quiz);
 
     return quiz[1];
   }

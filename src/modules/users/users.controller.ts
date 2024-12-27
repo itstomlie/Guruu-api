@@ -22,7 +22,6 @@ export class UsersController {
       const user = await this.usersService.create(createUserDto);
       return user;
     } catch (error) {
-      console.log('🚀 ~ UsersController ~ create ~ error:', error);
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new HttpException(
           'Username already exists, please try another username',
@@ -70,11 +69,6 @@ export class UsersController {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     return user;
-  }
-
-  @Get('/:id/posts')
-  findPostsByUserId(@Param('id') id: string) {
-    return this.usersService.findPostsByUserId(id);
   }
 
   @Put(':id')

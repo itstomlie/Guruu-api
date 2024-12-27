@@ -84,7 +84,6 @@ export class UsersService {
         ],
       },
     });
-    console.log('🚀 ~ UsersService ~ findOne ~ user:', user);
 
     if (user.character) {
       if (user.character.health < user.character.maxHealth) {
@@ -127,10 +126,6 @@ export class UsersService {
         'maxExperience',
       ],
     });
-  }
-
-  async findPostsByUserId(userId: string) {
-    return this.postsService.findPostsByUserId(userId);
   }
 
   async update(id: string, updateUserDto: Partial<User>): Promise<User> {
