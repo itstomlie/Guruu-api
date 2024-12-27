@@ -32,6 +32,7 @@ export class PostsController {
       cursor,
       search,
       status,
+      postId,
     }: {
       userId?: string;
       size?: string;
@@ -39,6 +40,7 @@ export class PostsController {
       cursor?: string;
       search?: string;
       status?: string;
+      postId?: string;
     },
   ) {
     return this.postsService.findAll({
@@ -48,6 +50,7 @@ export class PostsController {
       cursor,
       search,
       status,
+      postId,
     });
   }
 

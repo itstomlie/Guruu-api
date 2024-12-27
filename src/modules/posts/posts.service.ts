@@ -70,6 +70,7 @@ export class PostsService {
     cursor,
     search,
     status,
+    postId,
   }: {
     userId?: string;
     size?: number;
@@ -77,11 +78,16 @@ export class PostsService {
     cursor?: string;
     search?: string;
     status?: string;
+    postId?: string;
   }) {
     const whereClause: any = {
       status: status ? status.split(',') : Status.POSTED,
       visibility: PostVisibility.PUBLIC,
     };
+
+    if (postId) {
+      whereClause.id = postId;
+    }
 
     if (cursor) {
       whereClause.createdAt = {
