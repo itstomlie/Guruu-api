@@ -10,8 +10,11 @@ import { Tag } from './entities/tag.entity';
 import Pagination from 'src/common/helpers/pagination';
 import { Op, where } from 'sequelize';
 import moment from 'moment';
-import * as dayjs from 'dayjs';
 import { literal } from 'sequelize';
+
+const dayjs = require('dayjs');
+//import dayjs from 'dayjs' // ES 2015
+dayjs().format();
 
 @Injectable()
 export class PostsService {
@@ -90,8 +93,10 @@ export class PostsService {
     }
 
     if (cursor) {
+      const parsedCursor = dayjs(cursor).format('YYYY-MM-DD HH:mm:ss.SSSZ');
+
       whereClause.createdAt = {
-        [Op.lte]: literal(`'${cursor}'`),
+        [Op.lte]: literal(`'${parsedCursor}'`),
       };
     }
 

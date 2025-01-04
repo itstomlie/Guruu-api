@@ -6,16 +6,19 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { QuizzesService } from './quizzes.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
+import { JwtAuthGuard } from 'src/common/auth/guards/jwt.auth.guard';
 
 @Controller('quizzes')
 export class QuizzesController {
   constructor(private readonly quizzesService: QuizzesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   createQuiz(@Body() createQuizDto: CreateQuizDto) {
     return this.quizzesService.createQuiz(createQuizDto);
   }
@@ -31,6 +34,7 @@ export class QuizzesController {
   }
 
   @Get('/post/:id')
+  @UseGuards(JwtAuthGuard)
   async findOneByPostId(@Param('id') id: string) {
     const quiz = await this.quizzesService.findOneByPostId(id);
 
@@ -48,6 +52,7 @@ export class QuizzesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   update(@Param('id') id: string, @Body() updateQuizDto: UpdateQuizDto) {
     return this.quizzesService.update(id, updateQuizDto);
   }
