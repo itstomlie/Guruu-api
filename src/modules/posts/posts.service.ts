@@ -7,15 +7,13 @@ import { QuizzesService } from '../quizzes/quizzes.service';
 import { User } from '../users/entities/user.entity';
 import { Quiz, QuizStatus } from '../quizzes/entities/quiz.entity';
 import { Tag } from './entities/tag.entity';
-import Pagination from 'src/common/helpers/pagination';
 import { Op, where } from 'sequelize';
-import moment from 'moment';
 import { literal } from 'sequelize';
 
 const dayjs = require('dayjs');
 //import dayjs from 'dayjs' // ES 2015
-dayjs().format();
-
+const utc = require('dayjs/plugin/utc');
+dayjs.extend(utc);
 @Injectable()
 export class PostsService {
   constructor(
@@ -93,8 +91,9 @@ export class PostsService {
     }
 
     if (cursor) {
-      const parsedCursor = dayjs(cursor).format('YYYY-MM-DD HH:mm:ss.SSSZ');
-
+      const parsedCursor = dayjs(cursor)
+        .utc()
+        .format('YYYY-MM-DD HH:mm:ss.SSS');
       whereClause.createdAt = {
         [Op.lte]: literal(`'${parsedCursor}'`),
       };
@@ -163,7 +162,7 @@ export class PostsService {
       posts,
       nextCursor:
         posts.length > 0
-          ? new Date(posts[posts.length - 1].createdAt).toISOString()
+          ? posts[posts.length - 1].createdAt.toISOString()
           : null,
     };
   }
