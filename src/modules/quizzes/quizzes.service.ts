@@ -86,7 +86,7 @@ export class QuizzesService {
       include: [
         {
           model: Question,
-          attributes: ['id', 'displayTitle', 'title'],
+          attributes: ['id', 'displayTitle', 'title', 'createdAt'],
           include: [
             {
               model: QuestionCategory,
@@ -103,7 +103,13 @@ export class QuizzesService {
           ],
         },
       ],
+      order: [['questions', 'createdAt', 'ASC']],
     });
+
+    console.log(
+      '🚀 ~ QuizzesService ~ findOneByPostId ~ quiz:',
+      quiz?.questions,
+    );
 
     return quiz?.toJSON();
   }
