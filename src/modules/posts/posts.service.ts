@@ -6,7 +6,7 @@ import { Post, PostVisibility, Status } from './entities/post.entity';
 import { QuizzesService } from '../quizzes/quizzes.service';
 import { User } from '../users/entities/user.entity';
 import { Quiz, QuizStatus } from '../quizzes/entities/quiz.entity';
-import { Tag } from './entities/tag.entity';
+import { Tag } from '../tags/entities/tag.entity';
 import { Op, where } from 'sequelize';
 import { literal } from 'sequelize';
 
@@ -143,18 +143,17 @@ export class PostsService {
           model: Tag,
           attributes: ['id', 'tag'],
           through: { attributes: [] },
-          required: false,
-          ...(tags && { where: { tag: tags.split(',') } }),
+          required: true,
+          where: {
+            tag: tags
+              ? tags.split(',')
+              : ['General Knowledge', 'Science', 'Nature'],
+          },
         },
       ],
-      group: [
-        'Post.id',
-        'user.id', // Correct alias
-        'quiz.id',
-        'tags.id',
-      ],
+      group: ['Post.id', 'user.id', 'quiz.id', 'tags.id'],
       order: [['createdAt', 'DESC']],
-      limit: size || 3, // Ensure valid size
+      limit: size || 3,
       subQuery: false,
     });
 

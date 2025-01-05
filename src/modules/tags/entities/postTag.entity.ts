@@ -5,15 +5,11 @@ import {
   DataType,
   Default,
   PrimaryKey,
-  Unique,
   AllowNull,
   ForeignKey,
-  BelongsTo,
-  HasOne,
-  HasMany,
 } from 'sequelize-typescript';
-import { Post } from './post.entity';
-import { Tag } from './tag.entity';
+import { Post } from '../../posts/entities/post.entity';
+import { Tag } from '../../tags/entities/tag.entity';
 
 @Table({
   tableName: 'post_tags',

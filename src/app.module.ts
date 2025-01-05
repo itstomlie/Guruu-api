@@ -21,9 +21,10 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { VideosModule } from './modules/videos/videos.module';
 import { Waitlist } from './modules/users/entities/waitlist.entity';
-import { PostTag } from './modules/posts/entities/postTag.entity';
-import { Tag } from './modules/posts/entities/tag.entity';
+import { PostTag } from './modules/tags/entities/postTag.entity';
+import { Tag } from './modules/tags/entities/tag.entity';
 import { time } from 'console';
+import { TagsModule } from './modules/tags/tags.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { time } from 'console';
     UsersModule,
     PostsModule,
     VideosModule,
+    TagsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

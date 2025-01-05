@@ -5,18 +5,10 @@ import {
   DataType,
   Default,
   PrimaryKey,
-  Unique,
-  AllowNull,
-  ForeignKey,
-  BelongsTo,
-  HasOne,
-  HasMany,
   BelongsToMany,
 } from 'sequelize-typescript';
-import { User } from '../../users/entities/user.entity';
-import { Quiz } from 'src/modules/quizzes/entities/quiz.entity';
-import { Post } from './post.entity';
-import { PostTag } from './postTag.entity';
+import { Post } from '../../posts/entities/post.entity';
+import { PostTag } from '../../tags/entities/postTag.entity';
 
 @Table({
   tableName: 'tags',

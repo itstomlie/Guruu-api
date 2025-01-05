@@ -15,8 +15,8 @@ import {
 } from 'sequelize-typescript';
 import { User } from '../../users/entities/user.entity';
 import { Quiz } from 'src/modules/quizzes/entities/quiz.entity';
-import { Tag } from './tag.entity';
-import { PostTag } from './postTag.entity';
+import { Tag } from '../../tags/entities/tag.entity';
+import { PostTag } from '../../tags/entities/postTag.entity';
 
 export enum PostVisibility {
   PUBLIC = 'public',
