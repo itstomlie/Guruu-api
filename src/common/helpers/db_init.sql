@@ -30,10 +30,12 @@ CREATE TABLE users (
   profile_picture_url TEXT,
   bio TEXT,
   role user_role NOT NULL DEFAULT 'user',
-  last_login TIMESTAMP,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP,
-  deleted_at TIMESTAMP,
+  last_login TIMESTAMP WITH TIME ZONE,
+  selected_character TEXT,
+  selected_interests TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE,
+  deleted_at TIMESTAMP WITH TIME ZONE,
   CONSTRAINT fk_role CHECK (role IN ('super_admin', 'moderator', 'user'))
 );
 
@@ -47,8 +49,8 @@ CREATE TABLE posts (
     caption TEXT,
     visibility post_visibility NOT NULL DEFAULT 'public',
     status post_status NOT NULL DEFAULT 'posted',
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMP WITHOUT TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE,
     
     -- Foreign key constraint
     CONSTRAINT fk_posts_users
@@ -65,16 +67,16 @@ CREATE TABLE quizzes (
   title TEXT,
   description TEXT,
   status quiz_status NOT NULL DEFAULT 'active',
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE,
   FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE
 );
 
 CREATE TABLE question_categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), 
     type VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(), 
-    updated_at TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), 
+    updated_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE questions (
@@ -83,8 +85,8 @@ CREATE TABLE questions (
     category_id uuid NOT NULL, -- Foreign key referencing the question_categories table
     display_title TEXT, -- The parsed question text
     title TEXT NOT NULL, -- The actual question text
-    created_at TIMESTAMP DEFAULT NOW(), -- Timestamp for when the question is created
-    updated_at TIMESTAMP DEFAULT NULL, -- Optional timestamp for when the question is updated
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Timestamp for when the question is created
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL, -- Optional timestamp for when the question is updated
     FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE, -- Define foreign key relationship to quizzes
     FOREIGN KEY (category_id) REFERENCES question_categories(id) ON DELETE CASCADE -- Define foreign key relationship to question_categories
 );
@@ -93,8 +95,8 @@ CREATE TABLE options (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- Using UUIDs for the primary key
     question_id uuid NOT NULL, -- Foreign key referencing the questions table
     option TEXT NOT NULL, -- The option text
-    created_at TIMESTAMP DEFAULT NOW(), -- Timestamp for when the option is created
-    updated_at TIMESTAMP DEFAULT NULL, -- Optional timestamp for when the option is updated
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Timestamp for when the option is created
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL, -- Optional timestamp for when the option is updated
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE -- Define foreign key relationship to questions
 );
 
@@ -102,8 +104,8 @@ CREATE TABLE answers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- Using UUIDs for the primary key
     question_id uuid NOT NULL, -- Foreign key referencing the questions table
     answer TEXT NOT NULL, -- The answer text
-    created_at TIMESTAMP DEFAULT NOW(), -- Timestamp for when the answer is created
-    updated_at TIMESTAMP DEFAULT NULL, -- Optional timestamp for when the answer is updated
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(), -- Timestamp for when the answer is created
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL, -- Optional timestamp for when the answer is updated
     FOREIGN KEY (question_id) REFERENCES questions(id) ON DELETE CASCADE -- Define foreign key relationship to questions
 );
 
@@ -118,9 +120,9 @@ CREATE TABLE characters (
   max_experience INT DEFAULT 25,
   coins INT DEFAULT 0,
   gems INT DEFAULT 0,
-  last_hp_update_time TIMESTAMP DEFAULT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
-  updated_at TIMESTAMP DEFAULT NULL
+  last_hp_update_time TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NULL
 );
 
 CREATE TABLE waitlists (
@@ -129,23 +131,23 @@ CREATE TABLE waitlists (
   email VARCHAR(100) UNIQUE NOT NULL,
   message TEXT,
   creator BOOLEAN,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE tags (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   tag VARCHAR(100),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE post_tags (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   post_id uuid NOT NULL, 
   tag_id uuid NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE
 );
 
 INSERT INTO

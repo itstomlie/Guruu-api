@@ -78,6 +78,16 @@ export class User extends Model<User> {
   })
   lastLogin: Date;
 
+  @Column({
+    type: DataType.TEXT,
+  })
+  selectedCharacter: string;
+
+  @Column({
+    type: DataType.TEXT,
+  })
+  selectedInterests: string;
+
   @Default(DataType.NOW)
   @Column({
     type: DataType.DATE,
