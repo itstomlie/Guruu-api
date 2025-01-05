@@ -106,11 +106,6 @@ export class QuizzesService {
       order: [['questions', 'createdAt', 'ASC']],
     });
 
-    console.log(
-      '🚀 ~ QuizzesService ~ findOneByPostId ~ quiz:',
-      quiz?.questions,
-    );
-
     return quiz?.toJSON();
   }
 

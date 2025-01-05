@@ -144,11 +144,7 @@ export class PostsService {
           attributes: ['id', 'tag'],
           through: { attributes: [] },
           required: true,
-          where: {
-            tag: tags
-              ? tags.split(',')
-              : ['General Knowledge', 'Science', 'Nature'],
-          },
+          ...(tags && { where: { tag: tags.split(',') } }),
         },
       ],
       group: ['Post.id', 'user.id', 'quiz.id', 'tags.id'],
