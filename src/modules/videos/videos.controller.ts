@@ -1,10 +1,27 @@
-import { Controller, Get, Param, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Res,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { join } from 'path';
 import * as fs from 'fs';
+import { VideosService } from './videos.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('videos')
 export class VideosController {
+  constructor(private readonly videosService: VideosService) {}
+
+  @Get()
+  @UseInterceptors(FileInterceptor('file'))
+  async test(@UploadedFile() file: Express.Multer.File) {
+    return await this.videosService.asd(file);
+  }
+
   @Get(':filename')
   async getVideo(@Param('filename') filename: string, @Res() res: Response) {
     const filePath = join(__dirname, '..', '..', 'public', 'videos', filename);
