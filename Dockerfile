@@ -3,8 +3,9 @@ FROM --platform=linux/amd64 node:18-slim
 
 # Install SSH server
 RUN apt-get update && \
-    apt-get install -y openssh-server && \
+    apt-get install -y openssh-server ffmpeg && \
     mkdir /var/run/sshd
+
 
 # Define build arguments for username and password
 ARG USERNAME
