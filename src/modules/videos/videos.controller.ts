@@ -2,8 +2,11 @@ import {
   Controller,
   Get,
   Param,
+  Post,
+  Req,
   Res,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -11,15 +14,22 @@ import { join } from 'path';
 import * as fs from 'fs';
 import { VideosService } from './videos.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { JwtAuthGuard } from 'src/common/auth/guards/jwt.auth.guard';
+import { IExtendedRequest } from 'src/common/interfaces/request';
 
-@Controller('videos')
+@Controller('upload')
 export class VideosController {
   constructor(private readonly videosService: VideosService) {}
 
-  @Get()
+  @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async test(@UploadedFile() file: Express.Multer.File) {
-    return await this.videosService.asd(file);
+  @UseGuards(JwtAuthGuard)
+  async upload(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: IExtendedRequest,
+  ) {
+    const user = req.user;
+    return await this.videosService.upload(file, user);
   }
 
   @Get(':filename')
