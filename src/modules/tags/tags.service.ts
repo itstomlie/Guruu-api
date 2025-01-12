@@ -4,6 +4,7 @@ import { CreateTagDto } from './dto/create-tag.dto';
 import { getModelToken } from '@nestjs/sequelize';
 import { Tag } from './entities/tag.entity';
 import { AssociateTagsDto } from './dto/associate-tags.dto';
+import { Post, Status } from '../posts/entities/post.entity';
 
 @Injectable()
 export class TagsService {
@@ -13,6 +14,9 @@ export class TagsService {
 
     @Inject(getModelToken(PostTag))
     private readonly postTagRepo: typeof PostTag,
+
+    @Inject(getModelToken(Post))
+    private readonly postRepo: typeof Post,
   ) {}
 
   async create(createTagDto: CreateTagDto): Promise<Tag> {
@@ -56,6 +60,18 @@ export class TagsService {
         }),
       ),
     );
+
+    this.postRepo.update(
+      {
+        status: Status.POSTED,
+      },
+      {
+        where: {
+          id: postId,
+        },
+      },
+    );
+
     return 'Successfully associated tags';
   }
 }

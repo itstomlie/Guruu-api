@@ -51,7 +51,7 @@ CREATE TABLE posts (
     status post_status NOT NULL DEFAULT 'posted',
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE,
-    
+    deleted_at TIMESTAMP WITH TIME ZONE,
     -- Foreign key constraint
     CONSTRAINT fk_posts_users
         FOREIGN KEY(user_id) 

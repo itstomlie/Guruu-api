@@ -36,6 +36,7 @@ export enum Status {
   tableName: 'posts',
   timestamps: true,
   underscored: true,
+  paranoid: true,
 })
 export class Post extends Model<Post> {
   @PrimaryKey
@@ -98,6 +99,11 @@ export class Post extends Model<Post> {
     type: DataType.DATE,
   })
   updatedAt: Date;
+
+  @Column({
+    type: DataType.DATE,
+  })
+  deletedAt: Date;
 
   @BelongsTo(() => User)
   user: User;

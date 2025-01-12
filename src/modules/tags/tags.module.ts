@@ -4,9 +4,10 @@ import { TagsController } from './tags.controller';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Tag } from './entities/tag.entity';
 import { PostTag } from './entities/postTag.entity';
+import { Post } from '../posts/entities/post.entity';
 
 @Module({
-  imports: [SequelizeModule.forFeature([Tag, PostTag])],
+  imports: [SequelizeModule.forFeature([Tag, PostTag, Post])],
   controllers: [TagsController],
   providers: [TagsService],
   exports: [TagsService],
