@@ -60,9 +60,9 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   findPostsByUserId(
     @Param('id') id: string,
-    @Query() { status }: { status?: string },
+    @Query() { cursor, status }: { cursor?: string; status?: string },
   ) {
-    return this.postsService.findPostsByUserId({ userId: id, status });
+    return this.postsService.findPostsByUserId({ userId: id, status, cursor });
   }
 
   @Get(':id')

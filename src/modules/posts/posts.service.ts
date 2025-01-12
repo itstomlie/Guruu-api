@@ -194,11 +194,20 @@ export class PostsService {
     });
   }
 
-  async findPostsByUserId({ userId, status }) {
+  async findPostsByUserId({ userId, status, cursor }) {
     const whereClause: any = {
       status: status ? status.split(',') : Status.POSTED,
       userId: userId,
     };
+
+    if (cursor) {
+      const parsedCursor = dayjs(cursor)
+        .utc()
+        .format('YYYY-MM-DD HH:mm:ss.SSS');
+      whereClause.createdAt = {
+        [Op.lte]: literal(`'${parsedCursor}'`),
+      };
+    }
 
     const posts = await this.postRepo.findAll({
       where: {
@@ -216,11 +225,16 @@ export class PostsService {
       ],
       group: ['Post.id'],
       order: [['createdAt', 'DESC']],
-      limit: 9,
       subQuery: false,
     });
 
-    return posts;
+    return {
+      posts,
+      nextCursor:
+        posts.length > 0
+          ? posts[posts.length - 1].createdAt.toISOString()
+          : null,
+    };
   }
 
   update(id: number, updatePostDto: UpdatePostDto) {
