@@ -34,6 +34,11 @@ export class VideosService {
         contentType: 'application/vnd.apple.mpegurl',
       });
 
+    if (error) {
+      console.log('🚀 ~ VideosService ~ upload ~ error:', error);
+      throw error;
+    }
+
     await Promise.all(
       hls.segments.map((segment, i) =>
         this.storageClient
