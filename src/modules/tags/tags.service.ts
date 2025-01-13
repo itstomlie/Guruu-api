@@ -5,6 +5,8 @@ import { getModelToken } from '@nestjs/sequelize';
 import { Tag } from './entities/tag.entity';
 import { AssociateTagsDto } from './dto/associate-tags.dto';
 import { Post, Status } from '../posts/entities/post.entity';
+import { VideosService } from '../videos/videos.service';
+import { User } from '../users/entities/user.entity';
 
 @Injectable()
 export class TagsService {
@@ -17,6 +19,8 @@ export class TagsService {
 
     @Inject(getModelToken(Post))
     private readonly postRepo: typeof Post,
+
+    private readonly videosService: VideosService,
   ) {}
 
   async create(createTagDto: CreateTagDto): Promise<Tag> {
@@ -61,8 +65,46 @@ export class TagsService {
       ),
     );
 
-    this.postRepo.update(
+    const post = await this.postRepo.findOne({
+      where: { id: postId },
+      include: [
+        {
+          model: User,
+          attributes: ['id'],
+        },
+      ],
+    });
+
+    if (!post || !post.videoUrl) {
+      throw new Error('Post or video URL not found');
+    }
+
+    const match = post.videoUrl.match(/\/([^/]+)\.mp4$/);
+    const videoId = match ? match[1] : null;
+
+    const videoUrl =
+      'https://supabase-studio.daftarwebsite.com/storage/v1/object/public/' +
+      post.videoUrl;
+
+    const videoResponse = await fetch(videoUrl);
+    if (!videoResponse.ok) {
+      throw new Error('Failed to download the video');
+    }
+    const videoBuffer = Buffer.from(await videoResponse.arrayBuffer());
+
+    const { playlist, segments } =
+      await this.videosService.convertMp4ToHls(videoBuffer);
+
+    const uploadResult = await this.videosService.upload({
+      playlist,
+      segments,
+      videoId,
+      userId: post.user.id,
+    });
+
+    await this.postRepo.update(
       {
+        videoUrl: uploadResult.data.fullPath,
         status: Status.POSTED,
       },
       {
@@ -72,6 +114,6 @@ export class TagsService {
       },
     );
 
-    return 'Successfully associated tags';
+    return 'Successfully associated tags and processed video';
   }
 }

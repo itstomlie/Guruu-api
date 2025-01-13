@@ -23,14 +23,49 @@ export class VideosService {
     });
   }
 
-  async upload(file: Express.Multer.File, user: IExtendedUser) {
-    const videoId = file.originalname;
-    const dirPath = `${user.sub}/${videoId}`;
+  // async upload(file: Express.Multer.File, user: IExtendedUser) {
+  //   const videoId = file.originalname;
+  //   const dirPath = `${user.sub}/${videoId}`;
 
-    const hls = await this.convertMp4ToHls(file.buffer);
+  //   const hls = await this.convertMp4ToHls(file.buffer);
+  //   const { data, error } = await this.storageClient
+  //     .from('videos_hls')
+  //     .upload(path.join(dirPath, `${videoId + '.m3u8'}`), hls.playlist, {
+  //       contentType: 'application/vnd.apple.mpegurl',
+  //     });
+
+  //   if (error) {
+  //     console.log('🚀 ~ VideosService ~ upload ~ error:', error);
+  //     throw error;
+  //   }
+
+  //   await Promise.all(
+  //     hls.segments.map((segment, i) =>
+  //       this.storageClient
+  //         .from('videos_hls')
+  //         .upload(path.join(dirPath, `playlist${i.toString()}.ts`), segment, {
+  //           contentType: 'video/MP2T',
+  //         }),
+  //     ),
+  //   );
+
+  //   const fullPath = data.fullPath;
+
+  //   return {
+  //     statusCode: 200,
+  //     message: 'Video uploaded successfully',
+  //     data: {
+  //       fullPath,
+  //     },
+  //   };
+  // }
+
+  async upload({ playlist, segments, videoId, userId }) {
+    const dirPath = `${userId}/${videoId}`;
+
     const { data, error } = await this.storageClient
       .from('videos_hls')
-      .upload(path.join(dirPath, `${videoId + '.m3u8'}`), hls.playlist, {
+      .upload(path.join(dirPath, `${videoId + '.m3u8'}`), playlist, {
         contentType: 'application/vnd.apple.mpegurl',
       });
 
@@ -40,7 +75,7 @@ export class VideosService {
     }
 
     await Promise.all(
-      hls.segments.map((segment, i) =>
+      segments.map((segment, i) =>
         this.storageClient
           .from('videos_hls')
           .upload(path.join(dirPath, `playlist${i.toString()}.ts`), segment, {

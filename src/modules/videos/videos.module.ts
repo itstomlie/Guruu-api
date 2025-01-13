@@ -7,5 +7,6 @@ import { VideosService } from './videos.service';
   imports: [ConfigModule],
   controllers: [VideosController],
   providers: [VideosService],
+  exports: [VideosService],
 })
 export class VideosModule {}

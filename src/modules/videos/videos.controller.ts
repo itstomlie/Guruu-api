@@ -21,16 +21,16 @@ import { IExtendedRequest } from 'src/common/interfaces/request';
 export class VideosController {
   constructor(private readonly videosService: VideosService) {}
 
-  @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  @UseGuards(JwtAuthGuard)
-  async upload(
-    @UploadedFile() file: Express.Multer.File,
-    @Req() req: IExtendedRequest,
-  ) {
-    const user = req.user;
-    return await this.videosService.upload(file, user);
-  }
+  // @Post()
+  // @UseInterceptors(FileInterceptor('file'))
+  // @UseGuards(JwtAuthGuard)
+  // async upload(
+  //   @UploadedFile() file: Express.Multer.File,
+  //   @Req() req: IExtendedRequest,
+  // ) {
+  //   const user = req.user;
+  //   return await this.videosService.upload(file, user);
+  // }
 
   @Get(':filename')
   async getVideo(@Param('filename') filename: string, @Res() res: Response) {
