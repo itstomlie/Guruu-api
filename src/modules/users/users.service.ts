@@ -42,9 +42,11 @@ export class UsersService {
   }
 
   async findAll({ email }: { email?: string }) {
-    const users = this.userRepo.findAll<User>({
+    const users = await this.userRepo.findAll({
+      attributes: ['id', 'email'],
       ...(email && { where: { email } }),
     });
+    console.log('🚀 ~ UsersService ~ findAll ~ users:', users);
 
     return {
       statusCode: 200,
