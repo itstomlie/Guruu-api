@@ -8,6 +8,7 @@ import {
   Put,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
@@ -48,8 +49,11 @@ export class UsersController {
   }
 
   @Get()
-  async findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  async findAll(
+    @Query()
+    { email }: { email?: string },
+  ) {
+    return this.usersService.findAll({ email });
   }
 
   @Get(':id/character')

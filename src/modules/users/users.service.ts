@@ -41,8 +41,16 @@ export class UsersService {
     return waitlist;
   }
 
-  async findAll(): Promise<User[]> {
-    return this.userRepo.findAll<User>();
+  async findAll({ email }: { email?: string }) {
+    const users = this.userRepo.findAll<User>({
+      ...(email && { where: { email } }),
+    });
+
+    return {
+      statusCode: 200,
+      message: 'Successfully fetched users',
+      data: users,
+    };
   }
 
   async findOne(id: string): Promise<User> {
