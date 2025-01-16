@@ -56,13 +56,11 @@ export class TagsService {
       where: { tag: tagsArr },
     });
 
-    await Promise.all(
-      tagIds.map((tag) =>
-        this.postTagRepo.create({
-          postId: postId,
-          tagId: tag.id,
-        }),
-      ),
+    await this.postTagRepo.bulkCreate(
+      tagIds.map((tag) => ({
+        postId,
+        tagId: tag.id,
+      })),
     );
 
     const post = await this.postRepo.findOne({
