@@ -95,6 +95,8 @@ export class UsersService {
       },
     });
 
+    if (!user) throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+
     if (user.character) {
       if (user.character.health < user.character.maxHealth) {
         const { newHp, newLastUpdate } = calculateHpRegeneration(

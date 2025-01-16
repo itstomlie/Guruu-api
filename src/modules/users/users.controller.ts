@@ -25,7 +25,11 @@ export class UsersController {
     } catch (error) {
       if (error.name === 'SequelizeUniqueConstraintError') {
         throw new HttpException(
-          'Username already exists, please try another username',
+          {
+            statusCode: HttpStatus.BAD_REQUEST,
+            message: 'Username already exists, please try another username',
+            error: 'Bad Request',
+          },
           HttpStatus.BAD_REQUEST,
         );
       }
