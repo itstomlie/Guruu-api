@@ -30,3 +30,10 @@ services:
         reservations:
           cpus: '0.5'
           memory: 512M
+    networks:
+      - guruu-network
+
+networks:
+  guruu-network:
+    name: guruu-network
+    driver: bridge

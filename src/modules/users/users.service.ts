@@ -21,7 +21,10 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: Partial<User>): Promise<User> {
-    const user = await this.userRepo.create(createUserDto);
+    const user = await this.userRepo.create({
+      ...createUserDto,
+      email: createUserDto.email.toLowerCase(),
+    });
 
     await this.characterRepo.create({
       userId: user.id,
@@ -44,9 +47,8 @@ export class UsersService {
   async findAll({ email }: { email?: string }) {
     const users = await this.userRepo.findAll({
       attributes: ['id', 'email'],
-      ...(email && { where: { email } }),
+      ...(email && { where: { email: email.toLowerCase() } }),
     });
-    console.log('🚀 ~ UsersService ~ findAll ~ users:', users);
 
     return {
       statusCode: 200,

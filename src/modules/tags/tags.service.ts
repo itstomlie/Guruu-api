@@ -56,6 +56,10 @@ export class TagsService {
       where: { tag: tagsArr },
     });
 
+    if (tagIds.length === 0) {
+      throw new HttpException('Tags not found', HttpStatus.NOT_FOUND);
+    }
+
     await this.postTagRepo.bulkCreate(
       tagIds.map((tag) => ({
         postId,
@@ -81,8 +85,7 @@ export class TagsService {
     const videoId = match ? match[1] : null;
 
     const videoUrl =
-      'https://supabase-studio.daftarwebsite.com/storage/v1/object/public/' +
-      post.videoUrl;
+      process.env.SUPABASE_STORAGE_URL + '/object/public/' + post.videoUrl;
 
     const videoResponse = await fetch(videoUrl);
     if (!videoResponse.ok) {
