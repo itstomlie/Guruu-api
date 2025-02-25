@@ -50,71 +50,81 @@ export class TagsService {
   }
 
   async associateTags({ postId, tags }: AssociateTagsDto) {
-    const tagsArr = tags.map((tag) => tag.tag);
+    try {
+      const tagsArr = tags.map((tag) => tag.tag);
 
-    const tagIds = await this.tagRepo.findAll({
-      where: { tag: tagsArr },
-    });
+      const tagIds = await this.tagRepo.findAll({
+        where: { tag: tagsArr },
+      });
 
-    if (tagIds.length === 0) {
-      throw new HttpException('Tags not found', HttpStatus.NOT_FOUND);
-    }
+      if (tagIds.length === 0) {
+        throw new HttpException('Tags not found', HttpStatus.NOT_FOUND);
+      }
 
-    await this.postTagRepo.bulkCreate(
-      tagIds.map((tag) => ({
-        postId,
-        tagId: tag.id,
-      })),
-    );
+      await this.postTagRepo.bulkCreate(
+        tagIds.map((tag) => ({
+          postId,
+          tagId: tag.id,
+        })),
+      );
 
-    const post = await this.postRepo.findOne({
-      where: { id: postId },
-      include: [
+      const post = await this.postRepo.findOne({
+        where: { id: postId },
+        include: [
+          {
+            model: User,
+            attributes: ['id'],
+          },
+        ],
+      });
+
+      if (!post || !post.videoUrl) {
+        throw new Error('Post or video URL not found');
+      }
+
+      const match = post.videoUrl.match(/\/([^/]+)\.mp4$/);
+      const videoId = match ? match[1] : null;
+
+      const videoUrl =
+        process.env.SUPABASE_STORAGE_URL + '/object/public/' + post.videoUrl;
+      console.log('🚀 ~ TagsService ~ associateTags ~ videoUrl:', videoUrl);
+
+      const videoResponse = await fetch(videoUrl);
+      console.log(
+        '🚀 ~ TagsService ~ associateTags ~ videoResponse:',
+        videoResponse,
+      );
+      if (!videoResponse.ok) {
+        throw new Error('Failed to download the video');
+      }
+      const videoBuffer = Buffer.from(await videoResponse.arrayBuffer());
+
+      const { playlist, segments } =
+        await this.videosService.convertMp4ToHls(videoBuffer);
+
+      const uploadResult = await this.videosService.upload({
+        playlist,
+        segments,
+        videoId,
+        userId: post.user.id,
+      });
+
+      await this.postRepo.update(
         {
-          model: User,
-          attributes: ['id'],
+          videoUrl: uploadResult.data.fullPath,
+          status: Status.POSTED,
         },
-      ],
-    });
-
-    if (!post || !post.videoUrl) {
-      throw new Error('Post or video URL not found');
-    }
-
-    const match = post.videoUrl.match(/\/([^/]+)\.mp4$/);
-    const videoId = match ? match[1] : null;
-
-    const videoUrl =
-      process.env.SUPABASE_STORAGE_URL + '/object/public/' + post.videoUrl;
-
-    const videoResponse = await fetch(videoUrl);
-    if (!videoResponse.ok) {
-      throw new Error('Failed to download the video');
-    }
-    const videoBuffer = Buffer.from(await videoResponse.arrayBuffer());
-
-    const { playlist, segments } =
-      await this.videosService.convertMp4ToHls(videoBuffer);
-
-    const uploadResult = await this.videosService.upload({
-      playlist,
-      segments,
-      videoId,
-      userId: post.user.id,
-    });
-
-    await this.postRepo.update(
-      {
-        videoUrl: uploadResult.data.fullPath,
-        status: Status.POSTED,
-      },
-      {
-        where: {
-          id: postId,
+        {
+          where: {
+            id: postId,
+          },
         },
-      },
-    );
+      );
 
-    return 'Successfully associated tags and processed video';
+      return 'Successfully associated tags and processed video';
+    } catch (error) {
+      console.log('🚀 ~ TagsService ~ associateTags ~ error:', error);
+      throw error;
+    }
   }
 }
